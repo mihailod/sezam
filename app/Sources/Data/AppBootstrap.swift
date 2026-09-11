@@ -20,11 +20,19 @@ final class AppBootstrap {
     /// screen goes straight to the size prompt instead of waiting for a tap.
     var autoStartInstall = false
 
-    var pendingDownloadSize: String {
-        let f = ByteCountFormatter()
-        f.countStyle = .file
-        f.allowedUnits = [.useMB, .useGB]
-        return f.string(fromByteCount: pendingManifest?.compressedSize ?? 0)
+    /// Download size for the button on the download screen. Nil until a
+    /// manifest has answered; the button then just says "Download".
+    var knownDownloadSize: Int64?
+
+    /// Fetches the manifest quietly when the download screen appears, so the
+    /// button can quote the size before anything is tapped. It is a few
+    /// hundred bytes, and it never touches the installer's phase: offline, the
+    /// button simply goes without a size rather than the screen showing an error
+    /// nobody asked for.
+    func prefetchDownloadSize() async {
+        guard knownDownloadSize == nil,
+              let m = await installer.peekManifest() else { return }
+        knownDownloadSize = m.compressedSize
     }
 
     /// Guards the About screen's manual re-download. A courtesy limit, not
@@ -47,16 +55,24 @@ final class AppBootstrap {
         return Date() >= next
     }
 
+    /// True when the download screen is up because the user asked for a fresh
+    /// copy in Settings, rather than because the installed archive is missing
+    /// or damaged. The screen uses it to drop a line that would only repeat
+    /// the reason shown above it.
+    private(set) var isUserRequestedRedownload = false
+
     /// Hands off to the download screen, which owns the single size-consent
     /// prompt. The database is only closed once a replacement is verified, so
     /// cancelling here leaves the installed archive untouched.
     func startRedownload() {
         autoStartInstall = true
+        isUserRequestedRedownload = true
         state = .needsInstall(reason: "Re-downloading the archive.")
     }
 
     func check() {
         state = .checking
+        isUserRequestedRedownload = false
         guard let manifest = DatabaseLocation.installedManifest() else {
             state = .needsInstall(reason: nil); return
         }
@@ -74,6 +90,7 @@ final class AppBootstrap {
     func requestInstall() async {
         guard let m = await installer.prepareManifest() else { return }
         pendingManifest = m
+        knownDownloadSize = m.compressedSize
         showConsent = true
     }
 
@@ -93,6 +110,7 @@ final class AppBootstrap {
         await installer.install(manifest: manifest)
         if case .done = installer.phase {
             UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastDownloadKey)
+            isUserRequestedRedownload = false
             state = .ready
         }
     }

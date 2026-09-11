@@ -27,10 +27,7 @@ struct SettingsView: View {
     /// present, rather than guessing a number.
     private var archiveSizeLabel: String {
         guard let m = DatabaseLocation.installedManifest(), m.compressedSize > 0 else { return "" }
-        let f = ByteCountFormatter()
-        f.countStyle = .file
-        f.allowedUnits = [.useMB, .useGB]
-        return " (\(f.string(fromByteCount: m.compressedSize)))"
+        return " (\(Megabytes.text(m.compressedSize)))"
     }
 
     var body: some View {

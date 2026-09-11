@@ -47,6 +47,12 @@ final class DatabaseInstaller: NSObject {
         }
     }
 
+    /// The manifest without touching `phase`, for quoting the size before the
+    /// user has asked for anything. A failure is silent by design.
+    func peekManifest() async -> ArchiveManifest? {
+        try? await fetchManifest()
+    }
+
     func install(manifest: ArchiveManifest) async {
         do {
             // Peak disk is the .gz plus the expanded database; the .gz is removed
@@ -59,10 +65,18 @@ final class DatabaseInstaller: NSObject {
 
             let gz = try await download(manifest)
 
+            // Hashing 333 MB and expanding it to 773 MB are seconds of solid
+            // CPU work. This class is @MainActor, so running them inline froze
+            // the screen on whatever it had last drawn -- the progress updates
+            // below could not even be delivered, since they queue on the actor
+            // the work is blocking. Off the main actor, the screen keeps
+            // painting and can say what is happening.
             phase = .verifyingDownload(0)
-            let digest = try Digest.sha256(of: gz) { p in
-                Task { @MainActor in self.phase = .verifyingDownload(p) }
-            }
+            let digest = try await Task.detached(priority: .userInitiated) {
+                try Digest.sha256(of: gz) { p in
+                    Task { @MainActor in self.phase = .verifyingDownload(p) }
+                }
+            }.value
             guard digest.caseInsensitiveCompare(manifest.compressedSHA256) == .orderedSame else {
                 try? FileManager.default.removeItem(at: gz)
                 throw InstallError.checksumMismatch
@@ -71,9 +85,11 @@ final class DatabaseInstaller: NSObject {
             phase = .expanding(0)
             let staged = DatabaseLocation.scratchDirectory.appendingPathComponent("staged.db")
             try? FileManager.default.removeItem(at: staged)
-            try GzipDecoder.decompress(from: gz, to: staged) { p in
-                Task { @MainActor in self.phase = .expanding(p) }
-            }
+            try await Task.detached(priority: .userInitiated) {
+                try GzipDecoder.decompress(from: gz, to: staged) { p in
+                    Task { @MainActor in self.phase = .expanding(p) }
+                }
+            }.value
             try? FileManager.default.removeItem(at: gz)
 
             // Move into place only after expansion succeeds, so a failed install
@@ -85,7 +101,12 @@ final class DatabaseInstaller: NSObject {
             try FileManager.default.moveItem(at: staged, to: final)
             DatabaseLocation.excludeFromBackup(final)
 
-            if case let .failure(err) = DatabaseStore.verify(against: manifest) {
+            // `quick_check` reads all 773 MB, so this one is off the main actor
+            // for the same reason as the two above.
+            let verified = await Task.detached(priority: .userInitiated) {
+                DatabaseStore.verify(against: manifest)
+            }.value
+            if case let .failure(err) = verified {
                 throw err
             }
             try DatabaseLocation.writeInstalledManifest(manifest)
