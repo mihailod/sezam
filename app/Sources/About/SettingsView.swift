@@ -123,6 +123,23 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 2)
                 }
+
+                // Epigraphs close the panel, one card each.
+                ForEach(AppInfo.epigraphs) { epigraph in
+                    Section {
+                        VStack(alignment: .leading, spacing: 6) {
+                            // Quotes added at display time, as with the notice above.
+                            Text("\u{201C}" + epigraph.quote + "\u{201D}")
+                                .font(.callout.italic())
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text("\u{2014} " + epigraph.author)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .alert("Re-download the Archive?", isPresented: $confirmRedownload) {

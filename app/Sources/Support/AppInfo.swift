@@ -16,6 +16,21 @@ enum AppInfo {
         the site ceased operation in Belgrade, Serbia.
         """
 
+    /// Epigraphs shown on the cards that close the Settings panel.
+    struct Epigraph: Identifiable {
+        let quote: String
+        let author: String
+        var id: String { quote }
+    }
+
+    static let epigraphs = [
+        Epigraph(quote: "The purpose of computing is insight, not numbers.",
+                 author: "Richard Hamming"),
+        Epigraph(quote: "Data isn\u{2019}t information, any more than fifty tons "
+                 + "of cement is a skyscraper.",
+                 author: "Clifford Stoll"),
+    ]
+
     static var version: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
     }
