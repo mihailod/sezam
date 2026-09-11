@@ -1,0 +1,1181 @@
+# Company sweep using member names and cities
+
+Nothing hidden: earlier decisions are re-checked below rather than filtered out.
+Evidence per pair: whether the same person appears under both, whether members share a city,
+any distinctive shared word, and name similarity (0-1). Members are listed as `account` Name (city, year joined).
+
+## 1. New candidates — strongest first
+
+- [ ] **likely** — **Extracom** (11) + **Beta Computers** (1)
+    - same person: Dragan Nikolić; different cities: Novi Beograd vs Veliki Crljeni; name similarity 0.57
+    - A: `draganni` Dragan Nikolić (Novi Beograd, 1992); `djuram` Milomir Đurđević (Novi Beograd, 1992); `dgvozd` Dejan Gvozdanović (Novi Beograd, 1992); `jasha` Joahim Rafač (Novi Beograd, 1992); +7 more
+    - B: `dnikolic` Dragan Nikolić (Veliki Crljeni, 1991)
+- [ ] **likely** — **Beomedicina R&D** (2) + **Beomecina** (1)
+    - same person: Marko Sindik; same city: Beograd; name similarity 0.86
+    - A: `marks` Marko Sindik (Novi Beograd, 1993); `saks` Saša Aleksandrić (Beograd, 1993)
+    - B: `beomed` Marko Sindik (Beograd, 1991)
+- [ ] **likely** — **Biblioteka Grada Beograda** (2) + **Biciklisticki savez Beograda** (1)
+    - same city: Beograd; shared word: beograda; name similarity 0.57
+    - A: `dkaralic` Dragan Karalić (Beograd, 1993); `bvucenovic` Bojan Vučenović (Beograd, 1992)
+    - B: `bikeyubg` Petar Rokvić (Beograd, 1997)
+- [ ] **likely** — **ICM Nikšić** (2) + **Dp Crna Gora Niksic** (1)
+    - same city: Nikšić; shared word: niksic; name similarity 0.61
+    - A: `krimer` Andrej Krimer (Beograd, 1996); `sveselin` Veselin Samardžić (Nikšić, 1992)
+    - B: `softbel` Dojčilo Kuburović (Nikšić, 1993)
+- [ ] **likely** — **Televizija Banja Luka** (2) + **Abacus D.o.o. Banja Luka** (1)
+    - same city: Banja Luka; shared word: banja, luka; name similarity 0.59
+    - A: `nameci` Žarko Kecman (Banja Luka, 1992); `tvbl` Aleksandar Šuškalo (Banja Luka, 1992)
+    - B: `ddrale` Draško Dimitrijević (Banja Luka, 1991)
+- [ ] **likely** — **U.S. Information Service** (2) + **Coming Information Systems** (1)
+    - same city: Beograd; shared word: information; name similarity 0.59
+    - A: `usisbel` Usis Belgrade (Beograd, 1994); `amcenpod` Bane Lukić (Beograd, 1994)
+    - B: `vsas` Saša Vuleta (Beograd, 1992)
+- [ ] **likely** — **"apc" Inzenjering** (1) + **Asw-inzenjering** (1)
+    - same city: Beograd; name similarity 0.86
+    - A: `apci` Vladimir Popadić (Beograd, 1995)
+    - B: `aswsrle` Srđan Radovanović (Beograd, 1994)
+- [ ] **likely** — **"apc" Inzenjering** (1) + **Cc Inzenjering** (1)
+    - same city: Beograd; name similarity 0.89
+    - A: `apci` Vladimir Popadić (Beograd, 1995)
+    - B: `zcolic` Zoran Čolić (Beograd, 1991)
+- [ ] **likely** — **"ColorGraf" print** (1) + **G Print** (1)
+    - same city: Beograd; shared word: print; name similarity 0.60
+    - A: `plejboj` Srđan A. Đorđević (Beograd, 1997)
+    - B: `milja` Slobodan Žakula (Beograd, 1995)
+- [ ] **likely** — **"ColorGraf" print** (1) + **Nc Print** (1)
+    - same city: Beograd; shared word: print; name similarity 0.57
+    - A: `plejboj` Srđan A. Đorđević (Beograd, 1997)
+    - B: `ncprint` Nenad Ivković (Beograd, 1995)
+- [ ] **likely** — **"das" Biro Kikinda** (1) + **Ed "kikinda"** (1)
+    - same city: Kikinda; shared word: kikinda; name similarity 0.70
+    - A: `duka` Dušan Telečki (Kikinda, 1991)
+    - B: `radislav` Radislav Milankov (Kikinda, 1992)
+- [ ] **likely** — **"das" Biro Kikinda** (1) + **Tehnička Škola Kikinda** (1)
+    - same city: Kikinda; shared word: kikinda; name similarity 0.59
+    - A: `duka` Dušan Telečki (Kikinda, 1991)
+    - B: `tskk` Tehnička Škola (Kikinda, 1995)
+- [ ] **likely** — **"expert" Pozarevac** (1) + **Bambi Pozarevac** (1)
+    - same city: Požarevac; shared word: pozarevac; name similarity 0.62
+    - A: `ptperic` Petar Perić (Požarevac, 1993)
+    - B: `dseovic` Dragan Šeović (Požarevac, 1995)
+- [ ] **likely** — **"Spektar" G.milanovac** (1) + **Alef G.milanovac** (1)
+    - same city: Gornji Milanovac; shared word: milanovac; name similarity 0.71
+    - A: `djepeto` Petar Đorđević (Gornji Milanovac, 1994)
+    - B: `rajkos` Rajko Sretenović (Gornji Milanovac, 1993)
+- [ ] **likely** — **Afion Prizren** (1) + **Tupp Neli Prizren** (1)
+    - same city: Prizren; shared word: prizren; name similarity 0.59
+    - A: `zxhabali` Zeqir Xhabali (Prizren, 1995)
+    - B: `zbraha` Zenl Braha (Prizren, 1992)
+- [ ] **likely** — **Aim Beograd** (1) + **Ims - Beograd** (1)
+    - same city: Beograd; name similarity 0.90
+    - A: `aim.` Agencija Aim (Beograd, 1993)
+    - B: `mtdeki` Dejan Timotijević (Beograd, 1993)
+- [ ] **likely** — **Apatinska Pivara** (1) + **Apatinska Pivara Apatin** (1)
+    - same city: Apatin; shared word: apatinska, pivara; name similarity 0.83
+    - A: `szigic` Saša Žigić (Apatin, 1992)
+    - B: `nmandic` Nikola Mandić (Apatin, 1994)
+- [ ] **likely** — **Bdm Programming, Belgrade** (1) + **Ghz! Programming Group** (1)
+    - same city: Beograd; shared word: programming; name similarity 0.63
+    - A: `bdm.` Miša Trivković (Beograd, 1992)
+    - B: `niklaus` Nenad Nikolić (Voždovac, 1993)
+- [ ] **likely** — **Bel D.o.o.** (1) + **BELA** (1)
+    - same city: Beograd; name similarity 0.86
+    - A: `sjeremic` Sava Jeremić (Beograd, 1989)
+    - B: `borislavb` Borislav Blagojević (Beograd, 1996)
+- [ ] **likely** — **BIT computers** (1) + **I.Q. Computers** (1)
+    - same city: Novi Sad; name similarity 0.87
+    - A: `spanac` Zoran Spanović (Novi Sad, 1996)
+    - B: `francuski` Branislav Francuski (Novi Sad, 1995)
+- [ ] **likely** — **Biznis Klub Tropico Herceg Nov** (1) + **Kopex Herceg Novi** (1)
+    - same city: Herceg Novi; shared word: herceg; name similarity 0.59
+    - A: `michele` Miloš Gojković (Herceg Novi, 1992)
+    - B: `zjelic` Željko Jelić (Herceg Novi, 1995)
+- [ ] **likely** — **Dd "tekstil" Sombor** (1) + **KPZ Sombor** (1)
+    - same city: Sombor; shared word: sombor; name similarity 0.64
+    - A: `snedeljko` Nedeljko Stojsavljević (Sombor, 1993)
+    - B: `raleksa` Saša Radojčić (Sombor, 1997)
+- [ ] **likely** — **Dd 'sojaprotein' Becej** (1) + **Pik Bečej** (1)
+    - same city: Bečej; shared word: becej; name similarity 0.58
+    - A: `czoli` Zoltan Cehak (Bečej, 1991)
+    - B: `bljuz` Ljubomir Glavonić (Bečej, 1991)
+- [ ] **likely** — **Dizel SportNET Agency** (1) + **Sportnet Agency** (1)
+    - same person: Marko Maoduš; same city: Beograd; shared word: agency, sportnet; name similarity 0.85
+    - A: `dizel` Marko Maoduš (Beograd, 1995)
+    - B: `papa.smurf` Marko Maoduš (Beograd, 1998)
+- [ ] **likely** — **Ed "kikinda"** (1) + **Tehnička Škola Kikinda** (1)
+    - same city: Kikinda; shared word: kikinda; name similarity 0.55
+    - A: `radislav` Radislav Milankov (Kikinda, 1992)
+    - B: `tskk` Tehnička Škola (Kikinda, 1995)
+- [ ] **likely** — **Ei "1.decembar" Pljevlja** (1) + **Okrum Pljevlja** (1)
+    - same city: Pljevlja; shared word: pljevlja; name similarity 0.56
+    - A: `d.andjelic` Dragan Anđelić (Pljevlja, 1991)
+    - B: `okrum` Dragan Vraneš (Pljevlja, 1993)
+- [ ] **likely** — **Ei "1.decembar" Pljevlja** (1) + **Pt Centar Pljevlja** (1)
+    - same city: Pljevlja; shared word: pljevlja; name similarity 0.73
+    - A: `d.andjelic` Dragan Anđelić (Pljevlja, 1991)
+    - B: `beko` Enver Bojadžić (Pljevlja, 1993)
+- [ ] **likely** — **Ekonomski Fakultet Niš** (1) + **Elektronski Fakultet Niš** (1)
+    - same city: Niš; name similarity 0.86
+    - A: `deniogi` Ognjen Radović (Niš, 1995)
+    - B: `vokram` Vladislav Marković (Niš, 1995)
+- [ ] **likely** — **ELEKTRON Priština** (1) + **J.P. Elektrokosmet** (1)
+    - same person: Predrag Nenadović; same city: Priština; name similarity 0.58
+    - A: `nenadovic` Predrag Nenadović (Priština, 1996)
+    - B: `ekosmet` Predrag Nenadović (Priština, 1996)
+- [ ] **likely** — **ELEKTRON Priština** (1) + **J.p. Elektrokosmet Pri[tina** (1)
+    - same person: Predrag Nenadović; same city: Priština; name similarity 0.74
+    - A: `nenadovic` Predrag Nenadović (Priština, 1996)
+    - B: `facko` Predrag Nenadović (Priština, 1994)
+- [ ] **likely** — **ETF Podgorica** (1) + **Inpek Dd Podgorica** (1)
+    - same city: Podgorica; shared word: podgorica; name similarity 0.77
+    - A: `rvpuzovic` Radosav Puzović (Podgorica, 1990)
+    - B: `pvladimir` Vladimir Pajović (Podgorica, 1993)
+- [ ] **likely** — **ETF Podgorica** (1) + **Rzup Podgorica** (1)
+    - same city: Podgorica; shared word: podgorica; name similarity 0.72
+    - A: `rvpuzovic` Radosav Puzović (Podgorica, 1990)
+    - B: `mimaras` Miodrag Maraš (Podgorica, 1992)
+- [ ] **likely** — **Ets Sarajevo** (1) + **Oec Consult, Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.69
+    - A: `sens` Senad Surković (Sarajevo, 1992)
+    - B: `rasl` Rajko Lozo (Sarajevo, 1992)
+- [ ] **likely** — **Ets Sarajevo** (1) + **P.p. Step5 Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.69
+    - A: `sens` Senad Surković (Sarajevo, 1992)
+    - B: `steppet` Deni Mandurić (Sarajevo, 1991)
+- [ ] **likely** — **Ets Sarajevo** (1) + **Sarajevo Osiguranje Dd.** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.55
+    - A: `sens` Senad Surković (Sarajevo, 1992)
+    - B: `vila` Goran Vilić (Sarajevo, 1991)
+- [ ] **likely** — **Ets Sarajevo** (1) + **Televizija Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.62
+    - A: `sens` Senad Surković (Sarajevo, 1992)
+    - B: `tvsarajevo` Televizija Sarajevo (Sarajevo, 1991)
+- [ ] **likely** — **Ets Sarajevo** (1) + **Zoil Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.70
+    - A: `sens` Senad Surković (Sarajevo, 1992)
+    - B: `munibo` Munib Ovčina (Sarajevo, 1990)
+- [ ] **likely** — **Fabrika Šećera "bačka"** (1) + **Fabrika Secera Vrbas** (1)
+    - same person: Đura Bašić; same city: Vrbas / Titov Vrbas; shared word: secera; name similarity 0.83
+    - A: `backa` Đura Bašić (Vrbas, 1991)
+    - B: `djuka` Đura Bašić (Titov Vrbas, 1990)
+- [ ] **likely** — **G Print** (1) + **Nc Print** (1)
+    - same city: Beograd; shared word: print; name similarity 0.77
+    - A: `milja` Slobodan Žakula (Beograd, 1995)
+    - B: `ncprint` Nenad Ivković (Beograd, 1995)
+- [ ] **likely** — **Graficka Radionica-bar** (1) + **Vg Biroelektronika Bar** (1)
+    - same city: Bar; shared word: bar; name similarity 0.55
+    - A: `grrad` Stevo Popović (Bar, 1994)
+    - B: `srade` Rade Šestović (Bar, 1994)
+- [ ] **likely** — **He "bajina Bašta"** (1) + **Metalflex - Bajina Bašta** (1)
+    - same city: Bajina Bašta; shared word: bajina, basta; name similarity 0.73
+    - A: `ljuscho` Ljubodrag Josipović (Bajina Bašta, 1993)
+    - B: `boccaccio` Boris Milinkovic (Bajina Bašta, 1993)
+- [ ] **likely** — **He "bajina Bašta"** (1) + **Radio Bajina Bastad** (1)
+    - same city: Bajina Bašta; shared word: bajina; name similarity 0.73
+    - A: `ljuscho` Ljubodrag Josipović (Bajina Bašta, 1993)
+    - B: `btomic` Boban Tomić (Bajina Basta, 1995)
+- [ ] **likely** — **hip hop house** (1) + **HiP-HoP Company Ltd.** (1)
+    - same city: Beograd; shared word: hip, hop; name similarity 0.71
+    - A: `gangstarr` Goran Spasić (Beograd, 1997)
+    - B: `frale` Miomir Stefanović (Beograd, 1996)
+- [ ] **likely** — **hip hop house** (1) + **House** (1)
+    - same city: Beograd; shared word: house; name similarity 0.62
+    - A: `gangstarr` Goran Spasić (Beograd, 1997)
+    - B: `slukic` Slobodan Lukić (Beograd, 1990)
+- [ ] **likely** — **Hyperopia [music]** (1) + **Hyperopia [public Relations]** (1)
+    - same city: Beograd; shared word: hyperopia; name similarity 0.63
+    - A: `pyc.guy` Marko Domanović (Beograd, 1994)
+    - B: `msavkovic` Marko Savković (Beograd, 1995)
+- [ ] **likely** — **Impuls P.o. Rijeka** (1) + **Lipovica-posl. Rijeka** (1)
+    - same city: Rijeka; shared word: rijeka; name similarity 0.58
+    - A: `zturk` Željko Turk (Rijeka, 1990)
+    - B: `juni` Ezio Milić (Rijeka, 1990)
+- [ ] **likely** — **Inpek Dd Podgorica** (1) + **Rzup Podgorica** (1)
+    - same city: Podgorica; shared word: podgorica; name similarity 0.74
+    - A: `pvladimir` Vladimir Pajović (Podgorica, 1993)
+    - B: `mimaras` Miodrag Maraš (Podgorica, 1992)
+- [ ] **likely** — **Insane Shit INC.** (1) + **My shit INC.** (1)
+    - same person: Marko Milošević; same city: Novi Beograd; shared word: shit; name similarity 0.50
+    - A: `niko.` Marko Milošević (Novi Beograd, 1997)
+    - B: `domatjin` Marko Milošević (Novi Beograd, 1997)
+- [ ] **likely** — **Istrazivanje Besmisla** (1) + **Istraživanje Ruda I Gubljenje** (1)
+    - same city: Beograd; shared word: istrazivanje; name similarity 0.61
+    - A: `giuliano` Miodrag Veselinović (Beograd, 1998)
+    - B: `duki` Uroš Dukanac (Beograd, 1990)
+- [ ] **likely** — **Ivanjica Company** (1) + **Zlatcom - Ivanjica** (1)
+    - same city: Ivanjica; shared word: ivanjica; name similarity 0.70
+    - A: `pristic` Predrag Ristić (Ivanjica, 1994)
+    - B: `zlatcom` Darko Zlatić (Ivanjica, 1993)
+- [ ] **likely** — **J.P. Elektrokosmet** (1) + **J.p. Elektrokosmet Pri[tina** (1)
+    - same person: Predrag Nenadović; same city: Priština; shared word: elektrokosmet; name similarity 0.81
+    - A: `ekosmet` Predrag Nenadović (Priština, 1996)
+    - B: `facko` Predrag Nenadović (Priština, 1994)
+- [ ] **likely** — **Kompanija "osiguranje Dunav" D** (1) + **Stankom-osiguranje-beograd** (1)
+    - same city: Beograd; shared word: osiguranje; name similarity 0.56
+    - A: `kdunav` Kompanija Dunav (Beograd, 1995)
+    - B: `ecvijo` Dejan Cvijović (Beograd, 1992)
+- [ ] **likely** — **Kompanija "osiguranje Dunav" D** (1) + **Sumadija Osiguranje** (1)
+    - same city: Beograd; shared word: osiguranje; name similarity 0.61
+    - A: `kdunav` Kompanija Dunav (Beograd, 1995)
+    - B: `sumerc` Bojan Maravić (Beograd, 1994)
+- [ ] **likely** — **Koniko - Skopje** (1) + **Tek, Skopje, Mk** (1)
+    - same city: Skopje; shared word: skopje; name similarity 0.61
+    - A: `jaro` Nikola Javorac (Skopje, 1993)
+    - B: `kvelkovski` Kiro Velkovski (Skopje, Mk, 1990)
+- [ ] **likely** — **Lex Enterprises Inc.** (1) + **Markoni Enterprises Ltd.** (1)
+    - same city: Beograd; shared word: enterprises; name similarity 0.69
+    - A: `.lex.` Luka Zlatić (Beograd, 1998)
+    - B: `thug` Marko Marković (Beograd, 1997)
+- [ ] **likely** — **Lex Enterprises Inc.** (1) + **Vlam Enterprises** (1)
+    - same city: Beograd; shared word: enterprises; name similarity 0.83
+    - A: `.lex.` Luka Zlatić (Beograd, 1998)
+    - B: `vlad` Vladan Marinković (Beograd, 1992)
+- [ ] **likely** — **Markoni Enterprises Ltd.** (1) + **Vlam Enterprises** (1)
+    - same city: Beograd; shared word: enterprises; name similarity 0.73
+    - A: `thug` Marko Marković (Beograd, 1997)
+    - B: `vlad` Vladan Marinković (Beograd, 1992)
+- [ ] **likely** — **Metalflex - Bajina Bašta** (1) + **Radio Bajina Bastad** (1)
+    - same city: Bajina Bašta; shared word: bajina; name similarity 0.65
+    - A: `boccaccio` Boris Milinkovic (Bajina Bašta, 1993)
+    - B: `btomic` Boban Tomić (Bajina Basta, 1995)
+- [ ] **likely** — **Misko-promet** (1) + **Pp"srbija Promet"** (1)
+    - same person: Miško Đekić; same city: Vlasotince; name similarity 0.61
+    - A: `mikimaus` Miško Đekić (Vlasotince, 1997)
+    - B: `carevica` Miško Đekić (Vlasotince, 1994)
+- [ ] **likely** — **Mladost Loznica** (1) + **Preduzece "finncel" Loznica** (1)
+    - same city: Loznica; shared word: loznica; name similarity 0.57
+    - A: `miro` Miroslav Vujičić (Loznica, 1990)
+    - B: `pipe` Predrag Filipović (Loznica, 1993)
+- [ ] **likely** — **Mpa Dp Za Informatički Inženje** (1) + **Sektor Za Informatički Inženje** (1)
+    - same city: Zrenjanin; shared word: informaticki, inzenje; name similarity 0.82
+    - A: `lloci` Lajoč Loci (Zrenjanin, 1990)
+    - B: `barsa` Borivoj Arsić (Zrenjanin, 1993)
+- [ ] **likely** — **Muzejsko Društvo Majdanpek** (1) + **Zlatara Majdanpek** (1)
+    - same city: Majdanpek; shared word: majdanpek; name similarity 0.55
+    - A: `dpaun` Paun Es Durlić (Majdanpek, 1991)
+    - B: `vdarko` Darko Vujnović (Majdanpek, 1993)
+- [ ] **likely** — **Nip Politika Weekly** (1) + **tv politika** (1)
+    - same city: Beograd; shared word: politika; name similarity 0.59
+    - A: `politika` Milan Mišić (Beograd, 1991)
+    - B: `cagic` Slobodan Cagić (Beograd, 1996)
+- [ ] **likely** — **Ocean Travnik** (1) + **Pp "alternative" Travnik** (1)
+    - same city: Travnik; shared word: travnik; name similarity 0.60
+    - A: `ocean` Admir Hodžić (Travnik, 1991)
+    - B: `ndervisevic` Nail Dervišević (Travnik, 1992)
+- [ ] **likely** — **Oec Consult, Sarajevo** (1) + **Televizija Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.56
+    - A: `rasl` Rajko Lozo (Sarajevo, 1992)
+    - B: `tvsarajevo` Televizija Sarajevo (Sarajevo, 1991)
+- [ ] **likely** — **Oec Consult, Sarajevo** (1) + **Zoil Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.67
+    - A: `rasl` Rajko Lozo (Sarajevo, 1992)
+    - B: `munibo` Munib Ovčina (Sarajevo, 1990)
+- [ ] **likely** — **Okrum Pljevlja** (1) + **Pt Centar Pljevlja** (1)
+    - same city: Pljevlja; shared word: pljevlja; name similarity 0.67
+    - A: `okrum` Dragan Vraneš (Pljevlja, 1993)
+    - B: `beko` Enver Bojadžić (Pljevlja, 1993)
+- [ ] **likely** — **P.p. Step5 Sarajevo** (1) + **Televizija Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.61
+    - A: `steppet` Deni Mandurić (Sarajevo, 1991)
+    - B: `tvsarajevo` Televizija Sarajevo (Sarajevo, 1991)
+- [ ] **likely** — **P.p. Step5 Sarajevo** (1) + **Zoil Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.59
+    - A: `steppet` Deni Mandurić (Sarajevo, 1991)
+    - B: `munibo` Munib Ovčina (Sarajevo, 1990)
+- [ ] **likely** — **Premiz-tehnoprojekt** (1) + **Tehnoprojekt Zenica** (1)
+    - same city: Zenica; shared word: tehnoprojekt; name similarity 0.67
+    - A: `dagomo` Josim Zamboni (Zenica, 1990)
+    - B: `jzamboni` Josip Zamboni (Zenica˝ů, 1990)
+- [ ] **likely** — **Republički fond PIO Crne Gore** (1) + **Republicki fond za zdravstvo C** (1)
+    - same city: Podgorica; shared word: republicki; name similarity 0.63
+    - A: `ercpior` Dragan Jocić (Podgorica, 1996)
+    - B: `zorgl` Zoran Glomazić (Podgorica, 1996)
+- [ ] **likely** — **SIMA & CO** (1) + **SIMA JE BAJA** (1)
+    - same city: Beograd; shared word: sima; name similarity 0.57
+    - A: `simce` Aleksandar Simić (Beograd, 1996)
+    - B: `boy.` Boris Kekic (Beograd, 1999)
+- [ ] **likely** — **Sima Inc.** (1) + **SIMA JE BAJA** (1)
+    - same city: Beograd; shared word: sima; name similarity 0.57
+    - A: `ssimic` Slobodan Simić (Beograd, 1998)
+    - B: `boy.` Boris Kekic (Beograd, 1999)
+- [ ] **likely** — **SO Zvezdara** (1) + **Zvezdara Teatar** (1)
+    - same city: Beograd; shared word: zvezdara; name similarity 0.67
+    - A: `scas` Srdjan Canović (Beograd, 1998)
+    - B: `nbrkic` Nenad Brkić (Beograd, 1993)
+- [ ] **likely** — **Sprint Nt Doo Sa Po** (1) + **Szr Sprint Biro** (1)
+    - same city: Novi Sad; shared word: sprint; name similarity 0.70
+    - A: `sprint` Sprint P. P. (Novi Sad, 1995)
+    - B: `subnoise` Sabolc Halai (Novi Sad, 1992)
+- [ ] **likely** — **Stankom Korporacija** (1) + **Stankom-osiguranje-beograd** (1)
+    - same city: Beograd; shared word: stankom; name similarity 0.57
+    - A: `bucca` Branko Ovčarić (Beograd, 1993)
+    - B: `ecvijo` Dejan Cvijović (Beograd, 1992)
+- [ ] **likely** — **Stankom-osiguranje-beograd** (1) + **Sumadija Osiguranje** (1)
+    - same city: Beograd; shared word: osiguranje; name similarity 0.57
+    - A: `ecvijo` Dejan Cvijović (Beograd, 1992)
+    - B: `sumerc` Bojan Maravić (Beograd, 1994)
+- [ ] **likely** — **Studentska Poliklinika** (1) + **Studentska Unija** (1)
+    - same city: Beograd; shared word: studentska; name similarity 0.72
+    - A: `st.pol` Jovo Mirković (Beograd, 1994)
+    - B: `studprot` Studentski Protest '96 (Beograd, 1992)
+- [ ] **likely** — **Sumadija Osiguranje** (1) + **Sumadija Promet** (1)
+    - same city: Beograd; shared word: sumadija; name similarity 0.62
+    - A: `sumerc` Bojan Maravić (Beograd, 1994)
+    - B: `neko` Nenad Kojić (Beograd, 1994)
+- [ ] **likely** — **Televizija Sarajevo** (1) + **Zoil Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.60
+    - A: `tvsarajevo` Televizija Sarajevo (Sarajevo, 1991)
+    - B: `munibo` Munib Ovčina (Sarajevo, 1990)
+- [ ] **likely** — **VIDEO CECA** (1) + **VIDEO-ART** (1)
+    - same city: Beograd; shared word: video; name similarity 0.71
+    - A: `zombi` Nemanja Knežić (Beograd, 1997)
+    - B: `chikita` Nikola Srb (Beograd, 1997)
+- [ ] possible — **Sezam** (10) + **SezamNet** (6)
+    - same city: Beograd; name similarity 0.77
+    - A: `racunari` Redakcija Računara (Beograd, 1991); `redakcija` Uprava Sezama (Beograd, 1989); `pitalice` Pitalice (Beograd, 1989); `demo` Sezam Demo (Beograd, 1990); +6 more
+    - B: `postmast` Sezam Postmaster (Beograd, 1996); `dzakic` Dragan Zakić (Beograd, 1990); `maki` Marija Zakić (Beograd, 1994); `sysadm` Sistem Administrator (Beograd, 1996); +2 more
+- [ ] possible — **Sezam** (10) + **SezamPro** (2)
+    - same city: Beograd; name similarity 0.77
+    - A: `racunari` Redakcija Računara (Beograd, 1991); `redakcija` Uprava Sezama (Beograd, 1989); `pitalice` Pitalice (Beograd, 1989); `demo` Sezam Demo (Beograd, 1990); +6 more
+    - B: `dejanr` Dejan Ristanović (Beograd, 1989); `zzivotic` Zoran Životić (Beograd, 1989)
+- [ ] possible — **Institut "Vinča"** (4) + **Institut Ims** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `iobr` Ivan Obrovački (Beograd, 1996); `esamardb` Branko Samardžić (Beograd, 1996); `labra` Aleksandar Nikolić (Beograd, 1995); `smasic` Slobodan Masić (Beograd, 1994)
+    - B: `glorija` Biljana Rakić (Beograd, 1992)
+- [ ] possible — **FTN Novi Sad** (3) + **Tv Novi Sad** (1)
+    - same city: Novi Sad; name similarity 0.84
+    - A: `zvuk` Zoran Vukobrat (Novi Sad, 1991); `lamp` Branislav Mazalica (Novi Sad, 1993); `iseskar` Ivan Šeškar (Novi Sad, 1990)
+    - B: `pavliva` Ivan Pavlović (Novi Sad, 1992)
+- [ ] possible — **OTC Computers** (3) + **Elpro Computers** (1)
+    - same city: Beograd; name similarity 0.77
+    - A: `sefsale` Aleksandar Jovčić (Beograd, 1995); `brzi` Zdravko Lalović (Beograd, 1996); `noye` Miroslav Stanojević (Beograd, 1996)
+    - B: `vmisev` Vladimir Mišev (Beograd, 1992)
+- [ ] possible — **Biblioteka Grada Beograda** (2) + **Zavod Za Izgradnju Grada** (1)
+    - same city: Beograd; shared word: grada; name similarity 0.32
+    - A: `dkaralic` Dragan Karalić (Beograd, 1993); `bvucenovic` Bojan Vučenović (Beograd, 1992)
+    - B: `mzecevic` Milo Zečević (Beograd, 1995)
+- [ ] possible — **Bit - Software Design** (2) + **BIT computers** (1)
+    - same city: Novi Sad; shared word: bit; name similarity 0.28
+    - A: `bitsoftware` Svetislav Isakov (Novi Sad, 1992); `bitsoft` Svetislav Isakov (Novi Sad, 1991)
+    - B: `spanac` Zoran Spanović (Novi Sad, 1996)
+- [ ] possible — **Brainsoft** (2) + **BoraSOFT** (1)
+    - same city: Beograd; name similarity 0.82
+    - A: `mboban` Boban Milošević (Beograd, 1994); `mastermind` Gojko Adžić (Beograd, 1995)
+    - B: `borasoft` Uroš Borovnjak (Beograd, 1997)
+- [ ] possible — **Commitments BBS** (2) + **Fuschnik Bbs** (1)
+    - same city: Beograd; shared word: bbs; name similarity 0.40
+    - A: `trooper` Saša Gošović (Beograd, 1997); `gsasa` Saša Gošović (Banjica Vozdovac, 1996)
+    - B: `mobh` Marko Kozlica (Beograd, 1994)
+- [ ] possible — **Cores** (2) + **Tores** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `zodiac` Aleksandar Jovanović (Beograd, 1996); `rogi` Igor Bulovic (Beograd, 1992)
+    - B: `turbo` Turbo Software (Beograd, 1996)
+- [ ] possible — **Filozofski Fakultet** (2) + **Fizicki Fakultet** (1)
+    - same city: Beograd; name similarity 0.79
+    - A: `dkosutic` Dalibor Košutić (Belgrade, 1993); `daba` Zoran Mandić (Beograd, 1990)
+    - B: `rjelena` Dragoslav Rakić (Beograd, 1995)
+- [ ] possible — **Goran&Co.** (2) + **ORLAN** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `goxi` Goran Milosavljević (Beograd, 1996); `goran.` Goran Mirkovic (Beograd, 1998)
+    - B: `kinez` Milan Radović (Beograd, 1996)
+- [ ] possible — **KBC Kragujevac** (2) + **Mpp Kdm Kragujevac** (1)
+    - same city: Kragujevac; name similarity 0.76
+    - A: `jankovic` Mirko Janković (Kragujevac, 1996); `dada` Jovica Pešović (Kragujevac, 1996)
+    - B: `nnkdm` Nebojša Nikolić (Kragujevac, 1995)
+- [ ] possible — **Radio B92** (2) + **Caa, B92, Yucca** (1)
+    - same city: Beograd; shared word: b92; name similarity 0.42
+    - A: `recc` Časopis "Reč" (Beograd, 1997); `bradio` Saša Vučinić (Beograd, 1991)
+    - B: `m.hristodulo` Miroslav Hristodulo (Beograd, 1993)
+- [ ] possible — **Televizija Banja Luka** (2) + **Info Projekt - Banja Luka** (1)
+    - same city: Banja Luka; shared word: banja, luka; name similarity 0.51
+    - A: `nameci` Žarko Kecman (Banja Luka, 1992); `tvbl` Aleksandar Šuškalo (Banja Luka, 1992)
+    - B: `senadm` Senad Mulabegović (Banja Luka, 1990)
+- [ ] possible — **Unis Unidata** (2) + **Unis Tours** (1)
+    - same city: Sarajevo; shared word: unis; name similarity 0.50
+    - A: `aimamovic` Aleksandar Imamović (Sarajevo, 1991); `ksefik` Šefik Krkić (Prijedor, 1990)
+    - B: `asmajlovic` Adnan Smajlović (Sarajevo, 1989)
+- [ ] possible — **"apc" Inzenjering** (1) + **Akukoinzenjering** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `apci` Vladimir Popadić (Beograd, 1995)
+    - B: `viper` Viktor Perolo (Beograd, 1994)
+- [ ] possible — **"apc" Inzenjering** (1) + **Dragon Inzenjering** (1)
+    - same city: Beograd; name similarity 0.77
+    - A: `apci` Vladimir Popadić (Beograd, 1995)
+    - B: `svab` Dušan Arbajter (Beograd, 1994)
+- [ ] possible — **"apc" Inzenjering** (1) + **Gemax - Inženjering** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `apci` Vladimir Popadić (Beograd, 1995)
+    - B: `gemax` Gemax Inženjering (Beograd, 1992)
+- [ ] possible — **"cinfo - Centar Informatike"** (1) + **Cinfo - Novi Sad** (1)
+    - same city: Novi Sad; shared word: cinfo; name similarity 0.41
+    - A: `cinfo` Ninoslav Šipčić (Novi Sad, 1993)
+    - B: `oslavko` Slavko Odavić (Novi Sad, 1991)
+- [ ] possible — **"ColorGraf" print** (1) + **Colorgrafx** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `plejboj` Srđan A. Đorđević (Beograd, 1997)
+    - B: `jujo` Jugoslav Stojanov (Beograd, 1997)
+- [ ] possible — **"De je ovde pikasov muzej?" Co** (1) + **Muzej Primenjenih Umetnosti** (1)
+    - same city: Beograd; shared word: muzej; name similarity 0.22
+    - A: `karakondzula` Božidar Srbić (Beograd, 1998)
+    - B: `kustos` Dragan Živković (Beograd, 1994)
+- [ ] possible — **"servis Computers"** (1) + **Is Computer** (1)
+    - same city: Kovin; name similarity 0.80
+    - A: `ilicj` Jovan Ilić (Kovin, 1995)
+    - B: `slavko` Slaviša Nenadić (Kovin, 1995)
+- [ ] possible — **"Trio Soft"** (1) + **Tritan-soft** (1)
+    - same city: Beograd; name similarity 0.78
+    - A: `dragosh` Dragoš Ilijević (Beograd, 1996)
+    - B: `tritan` Zlatko Vukomanović (Beograd, 1996)
+- [ ] possible — **"vojvodina Pro-ing '46" Dd** (1) + **Omega-ing** (1)
+    - same city: Novi Sad; shared word: ing; name similarity 0.40
+    - A: `gtomic` Goran Tomić (Novi Sad, 1991)
+    - B: `saram` Milan Saratlić (Novi Sad, 1995)
+- [ ] possible — **A1 Nezavisna Tv D.o.o. Skopje** (1) + **Koniko - Skopje** (1)
+    - same city: Skopje; shared word: skopje; name similarity 0.52
+    - A: `vodno` Predrag Čemerikić (Skopje, 1993)
+    - B: `jaro` Nikola Javorac (Skopje, 1993)
+- [ ] possible — **A1 Nezavisna Tv D.o.o. Skopje** (1) + **Masinski Fakultet Skopje** (1)
+    - same city: Skopje; shared word: skopje; name similarity 0.49
+    - A: `vodno` Predrag Čemerikić (Skopje, 1993)
+    - B: `djoskovski` Daniel Joskovski (Skopje, 1991)
+- [ ] possible — **A1 Nezavisna Tv D.o.o. Skopje** (1) + **Tek, Skopje, Mk** (1)
+    - same city: Skopje; shared word: skopje; name similarity 0.47
+    - A: `vodno` Predrag Čemerikić (Skopje, 1993)
+    - B: `kvelkovski` Kiro Velkovski (Skopje, Mk, 1990)
+- [ ] possible — **Ab Soft** (1) + **Mp-soft** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `bbrkic` Branislav Brkić (Beograd, 1991)
+    - B: `michelle` Milorad Perić (Beograd, 1992)
+- [ ] possible — **Abacus D.o.o. Banja Luka** (1) + **Info Projekt - Banja Luka** (1)
+    - same city: Banja Luka; shared word: banja, luka; name similarity 0.51
+    - A: `ddrale` Draško Dimitrijević (Banja Luka, 1991)
+    - B: `senadm` Senad Mulabegović (Banja Luka, 1990)
+- [ ] possible — **Agencija "gala M"** (1) + **Mp "gasalarm" Dd** (1)
+    - same city: Beograd; name similarity 0.77
+    - A: `markma` Marko Mandić (Beograd, 1992)
+    - B: `midel` Milovan Delić (Beograd, 1995)
+- [ ] possible — **Aim Beograd** (1) + **Ei Beograd** (1)
+    - same city: Beograd; name similarity 0.84
+    - A: `aim.` Agencija Aim (Beograd, 1993)
+    - B: `rboskovic` Radomir Bošković (Beograd, 1991)
+- [ ] possible — **Aim Beograd** (1) + **JPM BEOGRAD** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `aim.` Agencija Aim (Beograd, 1993)
+    - B: `zdrakulic` Žarko Drakulić (Beograd, 1996)
+- [ ] possible — **Aim Beograd** (1) + **Lachema Beograd** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `aim.` Agencija Aim (Beograd, 1993)
+    - B: `berg` Zoran Živković (Beograd, 1993)
+- [ ] possible — **Aim Beograd** (1) + **Radio Beograd** (1)
+    - same city: Beograd; name similarity 0.82
+    - A: `aim.` Agencija Aim (Beograd, 1993)
+    - B: `sperovic` Slobodan Perović (Beograd, 1991)
+- [ ] possible — **Akukoinzenjering** (1) + **Asw-inzenjering** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `viper` Viktor Perolo (Beograd, 1994)
+    - B: `aswsrle` Srđan Radovanović (Beograd, 1994)
+- [ ] possible — **Akukoinzenjering** (1) + **Cc Inzenjering** (1)
+    - same city: Beograd; name similarity 0.76
+    - A: `viper` Viktor Perolo (Beograd, 1994)
+    - B: `zcolic` Zoran Čolić (Beograd, 1991)
+- [ ] possible — **Akukoinzenjering** (1) + **Dragon Inzenjering** (1)
+    - same city: Beograd; name similarity 0.79
+    - A: `viper` Viktor Perolo (Beograd, 1994)
+    - B: `svab` Dušan Arbajter (Beograd, 1994)
+- [ ] possible — **Akukoinzenjering** (1) + **Gemax - Inženjering** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `viper` Viktor Perolo (Beograd, 1994)
+    - B: `gemax` Gemax Inženjering (Beograd, 1992)
+- [ ] possible — **Akukoinzenjering** (1) + **Oskult Inzenjering** (1)
+    - same city: Beograd; name similarity 0.79
+    - A: `viper` Viktor Perolo (Beograd, 1994)
+    - B: `strahinja` Aleksandar Predić (Beograd, 1992)
+- [ ] possible — **Art Tv - Emisija Artbajt** (1) + **Emisija Modulacije 202** (1)
+    - same city: Beograd; shared word: emisija; name similarity 0.46
+    - A: `artbajt` Art Bajt (Beograd, 1995)
+    - B: `congole` Dušan Vidović (Beograd, 1996)
+- [ ] possible — **As Program** (1) + **I Program Studija B,100.8 I 99** (1)
+    - same city: Beograd; shared word: program; name similarity 0.44
+    - A: `ntrajkovic` Nenad Trajković (Beograd, 1990)
+    - B: `biljana` Biljana Radeka (Beograd, 1995)
+- [ ] possible — **Asw-inzenjering** (1) + **Cc Inzenjering** (1)
+    - same city: Beograd; name similarity 0.81
+    - A: `aswsrle` Srđan Radovanović (Beograd, 1994)
+    - B: `zcolic` Zoran Čolić (Beograd, 1991)
+- [ ] possible — **Asw-inzenjering** (1) + **Dragon Inzenjering** (1)
+    - same city: Beograd; name similarity 0.77
+    - A: `aswsrle` Srđan Radovanović (Beograd, 1994)
+    - B: `svab` Dušan Arbajter (Beograd, 1994)
+- [ ] possible — **Asw-inzenjering** (1) + **Gemax - Inženjering** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `aswsrle` Srđan Radovanović (Beograd, 1994)
+    - B: `gemax` Gemax Inženjering (Beograd, 1992)
+- [ ] possible — **Asw-inzenjering** (1) + **Oskult Inzenjering** (1)
+    - same city: Beograd; name similarity 0.77
+    - A: `aswsrle` Srđan Radovanović (Beograd, 1994)
+    - B: `strahinja` Aleksandar Predić (Beograd, 1992)
+- [ ] possible — **Bambi Pozarevac** (1) + **Prehrambena Industrija "bambi"** (1)
+    - same city: Požarevac; shared word: bambi; name similarity 0.25
+    - A: `dseovic` Dragan Šeović (Požarevac, 1995)
+    - B: `bambix` Petar Tutavac (Požarevac, 1992)
+- [ ] possible — **Bdm Programming, Belgrade** (1) + **Indonesian Embassy Belgrade** (1)
+    - same city: Beograd; shared word: belgrade; name similarity 0.43
+    - A: `bdm.` Miša Trivković (Beograd, 1992)
+    - B: `molii` Mansyur Olii (Beograd, 1994)
+- [ ] possible — **Bel Connect** (1) + **Bel D.o.o.** (1)
+    - same city: Beograd; shared word: bel; name similarity 0.46
+    - A: `torbica` Zoran Torbica (Beograd, 1992)
+    - B: `sjeremic` Sava Jeremić (Beograd, 1989)
+- [ ] possible — **Bel D.o.o.** (1) + **Belim** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `sjeremic` Sava Jeremić (Beograd, 1989)
+    - B: `damjan` Mijat Damjanović (Beograd, 1995)
+- [ ] possible — **Bel D.o.o.** (1) + **MOBEL** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `sjeremic` Sava Jeremić (Beograd, 1989)
+    - B: `imiletic` Ivan Miletić (Beograd, 1999)
+- [ ] possible — **BISING Co. BEOGRAD** (1) + **Ims - Beograd** (1)
+    - same city: Beograd; name similarity 0.78
+    - A: `bising` Slobodan Dimitrijević (Beograd, 1997)
+    - B: `mtdeki` Dejan Timotijević (Beograd, 1993)
+- [ ] possible — **Business Club, Pp** (1) + **The Best Business Partner** (1)
+    - same city: Beograd; shared word: business; name similarity 0.52
+    - A: `business` Rajko Cvetković (Beograd, 1993)
+    - B: `bestbp` Miodrag Stakić (Beograd, 1992)
+- [ ] possible — **Caa, B92, Yucca** (1) + **Yucca - Yu Computer Communicat** (1)
+    - same city: Beograd; shared word: yucca; name similarity 0.28
+    - A: `m.hristodulo` Miroslav Hristodulo (Beograd, 1993)
+    - B: `zonjic` Radivoje Zonjić (Beograd, 1991)
+- [ ] possible — **Cc Inzenjering** (1) + **Gemax - Inženjering** (1)
+    - same city: Beograd; name similarity 0.76
+    - A: `zcolic` Zoran Čolić (Beograd, 1991)
+    - B: `gemax` Gemax Inženjering (Beograd, 1992)
+- [ ] possible — **Centar Za Socijalni Rad Becej** (1) + **Dd 'sojaprotein' Becej** (1)
+    - same city: Bečej; shared word: becej; name similarity 0.49
+    - A: `koko` Dragan Mirić (Bečej, 1993)
+    - B: `czoli` Zoltan Cehak (Bečej, 1991)
+- [ ] possible — **Centar Za Socijalni Rad Becej** (1) + **Pik Bečej** (1)
+    - same city: Bečej; shared word: becej; name similarity 0.36
+    - A: `koko` Dragan Mirić (Bečej, 1993)
+    - B: `bljuz` Ljubomir Glavonić (Bečej, 1991)
+- [ ] possible — **Cobit - Beograd** (1) + **Ei Beograd** (1)
+    - same city: Beograd; name similarity 0.76
+    - A: `woody` Srđan Vučić (Beograd, 1993)
+    - B: `rboskovic` Radomir Bošković (Beograd, 1991)
+- [ ] possible — **Dead Poets Society** (1) + **Dead Woman's Shoes** (1)
+    - same city: Beograd; shared word: dead; name similarity 0.45
+    - A: `mocart` Ognjen Rogacev (Beograd, 1996)
+    - B: `mortrisha` Branislava Radenković (Beograd, 1995)
+- [ ] possible — **Dizel SportNET Agency** (1) + **Lex Golfing Agency** (1)
+    - same city: Beograd; shared word: agency; name similarity 0.46
+    - A: `dizel` Marko Maoduš (Beograd, 1995)
+    - B: `lexus` ? (Beograd, 1995)
+- [ ] possible — **Ei Beograd** (1) + **Enjub Doo Beograd** (1)
+    - same city: Beograd; name similarity 0.76
+    - A: `rboskovic` Radomir Bošković (Beograd, 1991)
+    - B: `paris` Momir Jeremić (Beograd, 1991)
+- [ ] possible — **Ei Beograd** (1) + **Ims - Beograd** (1)
+    - same city: Beograd; name similarity 0.84
+    - A: `rboskovic` Radomir Bošković (Beograd, 1991)
+    - B: `mtdeki` Dejan Timotijević (Beograd, 1993)
+- [ ] possible — **Ei Beograd** (1) + **Radio Beograd** (1)
+    - same city: Beograd; name similarity 0.76
+    - A: `rboskovic` Radomir Bošković (Beograd, 1991)
+    - B: `sperovic` Slobodan Perović (Beograd, 1991)
+- [ ] possible — **Ei Beograd** (1) + **Tehnicom - Beograd** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `rboskovic` Radomir Bošković (Beograd, 1991)
+    - B: `aseovic` Aleksandar Seović (Beograd, 1994)
+- [ ] possible — **Ekonomski fakultet** (1) + **Elektronski Fakultet Niš** (1)
+    - same city: Niš; name similarity 0.77
+    - A: `ogii` Ognjen Radović (Niš, 1996)
+    - B: `vokram` Vladislav Marković (Niš, 1995)
+- [ ] possible — **Elektrovojvodina ED Senta** (1) + **Eling-senta** (1)
+    - same city: Senta; shared word: senta; name similarity 0.55
+    - A: `edison` Laslo Beviz (Senta, 1996)
+    - B: `tbzoltan` Zoltan Tot Bojnik (Senta, 1994)
+- [ ] possible — **Ets Sarajevo** (1) + **Nova Generacija I Rtv Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.54
+    - A: `sens` Senad Surković (Sarajevo, 1992)
+    - B: `kaza` Edib Kažić (Sarajevo, 1990)
+- [ ] possible — **EXEL** (1) + **exil** (1)
+    - same city: Novi Beograd; name similarity 0.75
+    - A: `exel` Srđan Popović (Novi Beograd, 1997)
+    - B: `ducakaja` Dušan Čubrić (Novi Beograd, 1996)
+- [ ] possible — **Fond Za Razvoj Demokratije "bm** (1) + **Pcart Preduzece Za Razvoj Info** (1)
+    - same city: Beograd; shared word: razvoj; name similarity 0.43
+    - A: `mradic` Momir Radić (Beograd, 1992)
+    - B: `pcart` Srđan Ristić (Beograd, 1992)
+- [ ] possible — **Gatergent General Trading Ltd** (1) + **General Informatics** (1)
+    - same city: Beograd; shared word: general; name similarity 0.44
+    - A: `mantoniadis` Makis Antoniadis (Beograd, 1993)
+    - B: `miles` Mileta Novaković (Beograd, 1992)
+- [ ] possible — **Hard Design** (1) + **RED Design** (1)
+    - same city: Beograd; name similarity 0.84
+    - A: `harddesign` Aleksandar Vladimirović (Beograd, 1997)
+    - B: `reddesign` Bojan Rašić (Beograd, 1997)
+- [ ] possible — **Ilr - Lola Računari** (1) + **Lola Institut** (1)
+    - same city: Beograd; shared word: lola; name similarity 0.37
+    - A: `mmilanov` Mile Milanov (Beograd, 1993)
+    - B: `lola.com` Nenad Lazović (Beograd, 1991)
+- [ ] possible — **Ims - Beograd** (1) + **Institut Ims** (1)
+    - same city: Beograd; shared word: ims; name similarity 0.29
+    - A: `mtdeki` Dejan Timotijević (Beograd, 1993)
+    - B: `glorija` Biljana Rakić (Beograd, 1992)
+- [ ] possible — **Ims - Beograd** (1) + **JPM BEOGRAD** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `mtdeki` Dejan Timotijević (Beograd, 1993)
+    - B: `zdrakulic` Žarko Drakulić (Beograd, 1996)
+- [ ] possible — **Integral Beograd** (1) + **INTERLIFT Beograd** (1)
+    - same city: Beograd; name similarity 0.84
+    - A: `cstevic` Čedomir Stević (Beograd, 1990)
+    - B: `interlift` Veljko Krtinić (Beograd, 1997)
+- [ ] possible — **Intermex Software & Communicat** (1) + **Yucca - Yu Computer Communicat** (1)
+    - same city: Beograd; shared word: communicat; name similarity 0.51
+    - A: `bulaja` Jovan Bulajić (Beograd, 1990)
+    - B: `zonjic` Radivoje Zonjić (Beograd, 1991)
+- [ ] possible — **Investbanka Beograd** (1) + **Montex Banka Dd Beograd** (1)
+    - same city: Beograd; name similarity 0.78
+    - A: `szivkovic` Svetozar Živković (Beograd, 1990)
+    - B: `monban` Montex Banka (Beograd, 1993)
+- [ ] possible — **Ivanic I Sin** (1) + **P.p."peki & Sin"** (1)
+    - same city: Beograd; shared word: sin; name similarity 0.42
+    - A: `bivancic` Bratislav Ivančić (Beograd, 1990)
+    - B: `boka` Boris Milinković (Beograd, 1992)
+- [ ] possible — **Japanska Ambasada** (1) + **Kanadska Asbasada** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `japan` Išida (Beograd, 1991)
+    - B: `kan` Mudge (Beograd, 1992)
+- [ ] possible — **JPM BEOGRAD** (1) + **Proming - Beograd** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `zdrakulic` Žarko Drakulić (Beograd, 1996)
+    - B: `slobam` Slobodan Milošević (Beograd, 1995)
+- [ ] possible — **kandidat za predsednika Srbije** (1) + **Mup Republike Srbije** (1)
+    - same city: Beograd; shared word: srbije; name similarity 0.49
+    - A: `grubor.marin` Marin Grubor (Beograd, 1997)
+    - B: `smilicevic` Saša Milićević (Beograd, 1994)
+- [ ] possible — **kandidat za predsednika Srbije** (1) + **Zajednica Radio Stanica Srbije** (1)
+    - same city: Beograd; shared word: srbije; name similarity 0.48
+    - A: `grubor.marin` Marin Grubor (Beograd, 1997)
+    - B: `anor` Nebojša Ristić (Beograd, 1993)
+- [ ] possible — **Kma-s** (1) + **koma** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `rcolic` Rastko Čolić (Beograd, 1992)
+    - B: `scout` Marko Predragovic (Beograd, 1999)
+- [ ] possible — **koma** (1) + **Komuna** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `scout` Marko Predragovic (Beograd, 1999)
+    - B: `maxa` Maksa Catović (Beograd, 1992)
+- [ ] possible — **Koniko - Skopje** (1) + **Masinski Fakultet Skopje** (1)
+    - same city: Skopje; shared word: skopje; name similarity 0.53
+    - A: `jaro` Nikola Javorac (Skopje, 1993)
+    - B: `djoskovski` Daniel Joskovski (Skopje, 1991)
+- [ ] possible — **Lenal Holding** (1) + **Ratko Mitrovic Holding D.d.** (1)
+    - same city: Beograd; shared word: holding; name similarity 0.50
+    - A: `vvesnic` Vojkan Vesnić (Beograd, 1995)
+    - B: `missko` Miloš Vasić (Beograd, 1995)
+- [ ] possible — **Lex Enterprises Inc.** (1) + **Lex Golfing Agency** (1)
+    - same city: Beograd; shared word: lex; name similarity 0.33
+    - A: `.lex.` Luka Zlatić (Beograd, 1998)
+    - B: `lexus` ? (Beograd, 1995)
+- [ ] possible — **Lex Golfing Agency** (1) + **Sportnet Agency** (1)
+    - same city: Beograd; shared word: agency; name similarity 0.47
+    - A: `lexus` ? (Beograd, 1995)
+    - B: `papa.smurf` Marko Maoduš (Beograd, 1998)
+- [ ] possible — **Masinski Fakultet Skopje** (1) + **Tek, Skopje, Mk** (1)
+    - same city: Skopje; shared word: skopje; name similarity 0.48
+    - A: `djoskovski` Daniel Joskovski (Skopje, 1991)
+    - B: `kvelkovski` Kiro Velkovski (Skopje, Mk, 1990)
+- [ ] possible — **Mpa** (1) + **Mpa Dp Za Informatički Inženje** (1)
+    - same city: Zrenjanin; shared word: mpa; name similarity 0.22
+    - A: `dstankov` Dušan Stankov (Zrenjanin, 1989)
+    - B: `lloci` Lajoč Loci (Zrenjanin, 1990)
+- [ ] possible — **Mup Republike Srbije** (1) + **Zajednica Radio Stanica Srbije** (1)
+    - same city: Beograd; shared word: srbije; name similarity 0.36
+    - A: `smilicevic` Saša Milićević (Beograd, 1994)
+    - B: `anor` Nebojša Ristić (Beograd, 1993)
+- [ ] possible — **Nova Generacija I Rtv Sarajevo** (1) + **Oec Consult, Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.45
+    - A: `kaza` Edib Kažić (Sarajevo, 1990)
+    - B: `rasl` Rajko Lozo (Sarajevo, 1992)
+- [ ] possible — **Nova Generacija I Rtv Sarajevo** (1) + **P.p. Step5 Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.44
+    - A: `kaza` Edib Kažić (Sarajevo, 1990)
+    - B: `steppet` Deni Mandurić (Sarajevo, 1991)
+- [ ] possible — **Nova Generacija I Rtv Sarajevo** (1) + **Sarajevo Osiguranje Dd.** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.36
+    - A: `kaza` Edib Kažić (Sarajevo, 1990)
+    - B: `vila` Goran Vilić (Sarajevo, 1991)
+- [ ] possible — **Nova Generacija I Rtv Sarajevo** (1) + **Televizija Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.55
+    - A: `kaza` Edib Kažić (Sarajevo, 1990)
+    - B: `tvsarajevo` Televizija Sarajevo (Sarajevo, 1991)
+- [ ] possible — **Nova Generacija I Rtv Sarajevo** (1) + **Zoil Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.53
+    - A: `kaza` Edib Kažić (Sarajevo, 1990)
+    - B: `munibo` Munib Ovčina (Sarajevo, 1990)
+- [ ] possible — **Oec Consult, Sarajevo** (1) + **P.p. Step5 Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.55
+    - A: `rasl` Rajko Lozo (Sarajevo, 1992)
+    - B: `steppet` Deni Mandurić (Sarajevo, 1991)
+- [ ] possible — **Oec Consult, Sarajevo** (1) + **Sarajevo Osiguranje Dd.** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.44
+    - A: `rasl` Rajko Lozo (Sarajevo, 1992)
+    - B: `vila` Goran Vilić (Sarajevo, 1991)
+- [ ] possible — **Oup Bitola** (1) + **Uprava Za Prihodi ,bitola** (1)
+    - same city: Bitola; shared word: bitola; name similarity 0.53
+    - A: `nnikolovski` Nikola Nikolovski (Bitola, 1990)
+    - B: `zpopovski` Zlatko Popovski (Bitola, 1990)
+- [ ] possible — **P.p. Step5 Sarajevo** (1) + **Sarajevo Osiguranje Dd.** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.48
+    - A: `steppet` Deni Mandurić (Sarajevo, 1991)
+    - B: `vila` Goran Vilić (Sarajevo, 1991)
+- [ ] possible — **Pan-radio Lutrije Vojvodine** (1) + **Zavod Za Urbanizam Vojvodine** (1)
+    - same city: Novi Sad; shared word: vojvodine; name similarity 0.49
+    - A: `panradio` Miroslav Božin (Novi Sad, 1991)
+    - B: `mvelimirovic` Milivoj Velimirović (Novi Sad, 1991)
+- [ ] possible — **Partner Impex** (1) + **The Best Business Partner** (1)
+    - same city: Beograd; shared word: partner; name similarity 0.45
+    - A: `marzi` Marko Živadinović (Beograd, 1993)
+    - B: `bestbp` Miodrag Stakić (Beograd, 1992)
+- [ ] possible — **Progres-beograd** (1) + **Proming - Beograd** (1)
+    - same city: Beograd; name similarity 0.79
+    - A: `mjelic` Milovan Jelić (Beograd, 1995)
+    - B: `slobam` Slobodan Milošević (Beograd, 1995)
+- [ ] possible — **Race Software** (1) + **Umbra Software** (1)
+    - same city: Beograd; name similarity 0.80
+    - A: `irac` Iztok Race (Beograd, 1993)
+    - B: `dzekovic` Darko Zeković (Beograd, 1995)
+- [ ] possible — **Republički fond PIO Crne Gore** (1) + **Republički Sekretarijat Za Raz** (1)
+    - same city: Podgorica; shared word: republicki; name similarity 0.50
+    - A: `ercpior` Dragan Jocić (Podgorica, 1996)
+    - B: `brano` Brano Gvozdenović (Podgorica, 1994)
+- [ ] possible — **Republicki fond za zdravstvo C** (1) + **Republički Sekretarijat Za Raz** (1)
+    - same city: Podgorica; shared word: republicki; name similarity 0.53
+    - A: `zorgl` Zoran Glomazić (Podgorica, 1996)
+    - B: `brano` Brano Gvozdenović (Podgorica, 1994)
+- [ ] possible — **SAN** (1) + **Yusan** (1)
+    - same city: Beograd; name similarity 0.75
+    - A: `anita` Anita Spasenovć (Beograd, 1997)
+    - B: `yusan` Slavomir Marković (Beograd, 1992)
+- [ ] possible — **Sarajevo Osiguranje Dd.** (1) + **Televizija Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.44
+    - A: `vila` Goran Vilić (Sarajevo, 1991)
+    - B: `tvsarajevo` Televizija Sarajevo (Sarajevo, 1991)
+- [ ] possible — **Sarajevo Osiguranje Dd.** (1) + **Zoil Sarajevo** (1)
+    - same city: Sarajevo; shared word: sarajevo; name similarity 0.53
+    - A: `vila` Goran Vilić (Sarajevo, 1991)
+    - B: `munibo` Munib Ovčina (Sarajevo, 1990)
+- [ ] possible — **Sever Subotica Dd02** (1) + **Sever-era Drive D.d** (1)
+    - same city: Subotica; shared word: sever; name similarity 0.47
+    - A: `severdva` Vilim Homolja (Subotica, 1994)
+    - B: `nbos` Nebojša Bosiljčić (Subotica, 1994)
+- [ ] possible — **Thermo-international** (1) + **Verona International** (1)
+    - same city: Beograd; name similarity 0.84
+    - A: `makica` Bojan Banjac (Beograd, 1994)
+    - B: `drale` Dušan Drašković (Beograd, 1992)
+- [ ] possible — **Univerzitetski Klinicki Centar** (1) + **Univerzitetski Računski Centar** (1)
+    - same city: Beograd; name similarity 0.82
+    - A: `salle` Aleksandar Đorđević (Beograd, 1991)
+    - B: `mbkocic` Mikica Kocić (Beograd, 1994)
+- [ ] possible — **Video Informativni Sistemi Bor** (1) + **ZC Bor** (1)
+    - same city: Bor; shared word: bor; name similarity 0.19
+    - A: `mzdravkovic` Miodrag Zdravković (Bor, 1991)
+    - B: `mladend` Mladen Dumitrašković (Bor, 1997)
+
+## 2. Your earlier 'keep separate' decisions, re-checked
+
+- [ ] **Ekonomski fakultet** (1) vs **Ekonomski Fakultet Niš** (1)
+    - same person: Ognjen Radović; same city: Niš; name similarity 0.92
+    - A: `ogii` Ognjen Radović (Niš, 1996)
+    - B: `deniogi` Ognjen Radović (Niš, 1995)
+- [ ] **Ilr - Lola Računari** (1) vs **Racunari I Komunikacije** (1)
+    - same city: Beograd; name similarity 0.44
+    - A: `mmilanov` Mile Milanov (Beograd, 1993)
+    - B: `vuki` Branko Vlajnić (Beograd, 1991)
+- [ ] **Integra D.o.o.** (1) vs **Integral Beograd** (1)
+    - same city: Beograd; name similarity 0.64
+    - A: `kale` Slobodan Kalezić (Beograd, 1990)
+    - B: `cstevic` Čedomir Stević (Beograd, 1990)
+- [ ] **JKP Gradske Pijace, VEGA Lab** (2) vs **Agencija Vega** (1)
+    - same city: Beograd; shared word: vega; name similarity 0.30
+    - A: `hercog` Aleksandar Hercog (Beograd, 1991); `ahercog` Aleksandar Hercog (Beograd, 1996)
+    - B: `kermit` Branko Jeković (Beograd, 1991)
+- [ ] **Odeljenje za alkoholizam** (1) vs **Odeljenje Za Alkoholizam Sombo** (1)
+    - same person: Karlo Karher; same city: Sombor; shared word: alkoholizam; name similarity 0.90
+    - A: `karoly` Karlo Karher (Sombor, 1996)
+    - B: `kkarlo` Karlo Karher (Sombor, 1993)
+- [ ] **Progres Autokuca** (1) vs **Progres-beograd** (1)
+    - same city: Beograd; shared word: progres; name similarity 0.55
+    - A: `pidza` Vlada Zlatanović (Beograd, 1992)
+    - B: `mjelic` Milovan Jelić (Beograd, 1995)
+- [ ] **Progres Autokuca** (1) vs **Progress YU** (1)
+    - same city: Beograd; name similarity 0.64
+    - A: `pidza` Vlada Zlatanović (Beograd, 1992)
+    - B: `skraljevic` Saša Kraljević (Beograd, 1990)
+- [ ] **Progres-beograd** (1) vs **Progress YU** (1)
+    - same city: Beograd; name similarity 0.58
+    - A: `mjelic` Milovan Jelić (Beograd, 1995)
+    - B: `skraljevic` Saša Kraljević (Beograd, 1990)
+- [ ] **Računari** (11) vs **Ilr - Lola Računari** (1)
+    - same city: Beograd; name similarity 0.70
+    - A: `tores` Tomica Orešković (Beograd, 1995); `ejakupovic` Esad Jakupović (Zemun, 1989); `ranka` Ranka Jovanović (Beograd, 1993); `sekretarica` Sekretarica Sezama (Beograd, 1993); +7 more
+    - B: `mmilanov` Mile Milanov (Beograd, 1993)
+- [ ] **Računari** (11) vs **Racunari I Komunikacije** (1)
+    - same city: Beograd; name similarity 0.55
+    - A: `tores` Tomica Orešković (Beograd, 1995); `ejakupovic` Esad Jakupović (Zemun, 1989); `ranka` Ranka Jovanović (Beograd, 1993); `sekretarica` Sekretarica Sezama (Beograd, 1993); +7 more
+    - B: `vuki` Branko Vlajnić (Beograd, 1991)
+- [ ] **Radio "S"** (1) vs **Radio Beograd** (1)
+    - same city: Beograd; name similarity 0.56
+    - A: `radios` Dejan Stančević (Beograd, 1998)
+    - B: `sperovic` Slobodan Perović (Beograd, 1991)
+- [ ] **Radio Index** (2) vs **Radio "index" I "vreme"** (1)
+    - same city: Beograd; shared word: index; name similarity 0.77
+    - A: `index` Radio Index (Beograd, 1993); `nevidljivi` Vladimir Todorović (Novi Beograd, 1996)
+    - B: `ladislavs` Ladislav Struharik (Beograd, 1992)
+- [ ] **SIMA & CO** (1) vs **Sima Inc.** (1)
+    - same city: Beograd; shared word: sima; name similarity 1.00
+    - A: `simce` Aleksandar Simić (Beograd, 1996)
+    - B: `ssimic` Slobodan Simić (Beograd, 1998)
+- [ ] **Sis** (2) vs **U.S. Information Service** (2)
+    - same city: Beograd; name similarity 0.26
+    - A: `bkosovac` Slobodan Kosovac (Beograd, 1990); `nele` Nenad Teofilović (Beograd, 1990)
+    - B: `usisbel` Usis Belgrade (Beograd, 1994); `amcenpod` Bane Lukić (Beograd, 1994)
+- [ ] **VREME** (2) vs **Radio "index" I "vreme"** (1)
+    - same city: Beograd; shared word: vreme; name similarity 0.48
+    - A: `vreme` Vreme Redakcija (Beograd, 1992); `ljzivkov` Ljubomir Živkov (Beograd, 1998)
+    - B: `ladislavs` Ladislav Struharik (Beograd, 1992)
+- [ ] **Yusan** (1) vs **Yuspan** (1)
+    - same city: Beograd; name similarity 0.91
+    - A: `yusan` Slavomir Marković (Beograd, 1992)
+    - B: `mgoran` Goran Mijić (Beograd, 1992)
+- [ ] **"eco Byte"** (1) vs **'Byte'** (1)
+    - different cities: Novi Bečej vs Beograd; shared word: byte; name similarity 0.73
+    - A: `vmarko` Marko Vasčić (Novi Bečej, 1993)
+    - B: `mgmilos` Miloš Maričić (Beograd, 1997)
+- [ ] **"START"** (1) vs **Start&design** (1)
+    - different cities: Vrbas / Titov Vrbas vs Niš; shared word: start; name similarity 0.62
+    - A: `fatstick` Dragan Tatarević (Vrbas, 1998)
+    - B: `sammy` Vlada Mišić (Niš, 1994)
+- [ ] **"v&m-electronic" D.o.o.** (1) vs **Val-electronic** (1)
+    - different cities: Ludbreg vs Senta; name similarity 0.88
+    - A: `bim.` Damir Špikić (Ludbreg, 1991)
+    - B: `vdragomir` Dragomir Vujačić (Senta, 1995)
+- [ ] **Abacus** (1) vs **Abacus D.o.o. Banja Luka** (1)
+    - different cities: Šabac vs Banja Luka; shared word: abacus; name similarity 0.57
+    - A: `gduric` Goran Đurić (Šabac, 1993)
+    - B: `ddrale` Draško Dimitrijević (Banja Luka, 1991)
+- [ ] **Abacus** (1) vs **Pp "abacus" Zrenjanin** (1)
+    - different cities: Šabac vs Zrenjanin; shared word: abacus; name similarity 0.57
+    - A: `gduric` Goran Đurić (Šabac, 1993)
+    - B: `drassa` Dragiša Živković (Zrenjanin, 1993)
+- [ ] **Abacus D.o.o. Banja Luka** (1) vs **Pp "abacus" Zrenjanin** (1)
+    - different cities: Banja Luka vs Zrenjanin; shared word: abacus; name similarity 0.60
+    - A: `ddrale` Draško Dimitrijević (Banja Luka, 1991)
+    - B: `drassa` Dragiša Živković (Zrenjanin, 1993)
+- [ ] **Agencija Popsoft** (1) vs **Popaj Soft** (1)
+    - different cities: Prokuplje vs Beograd; name similarity 0.88
+    - A: `popsoft` Vladimir Popović (Prokuplje, 1995)
+    - B: `popaj` Dragan Milošević (Beograd, 1995)
+- [ ] **Agrobanka** (1) vs **Agros Banka** (1)
+    - different cities: Beograd vs Subotica; name similarity 0.95
+    - A: `agroban` Velja Trifunović (Beograd, 1992)
+    - B: `nkolar` Nenad Kolar (Subotica, 1994)
+- [ ] **Beta Computers** (1) vs **BIT computers** (1)
+    - different cities: Veliki Crljeni vs Novi Sad; name similarity 0.88
+    - A: `dnikolic` Dragan Nikolić (Veliki Crljeni, 1991)
+    - B: `spanac` Zoran Spanović (Novi Sad, 1996)
+- [ ] **Byte** (2) vs **"eco Byte"** (1)
+    - different cities: Zemun vs Novi Bečej; shared word: byte; name similarity 0.73
+    - A: `tatjana` Tatjana Vukić (Zemun, 1990); `ceda` Čedo Andrijević (Zemun, 1990)
+    - B: `vmarko` Marko Vasčić (Novi Bečej, 1993)
+- [ ] **Byte** (2) vs **'Byte'** (1)
+    - different cities: Zemun vs Beograd; shared word: byte; name similarity 1.00
+    - A: `tatjana` Tatjana Vukić (Zemun, 1990); `ceda` Čedo Andrijević (Zemun, 1990)
+    - B: `mgmilos` Miloš Maričić (Beograd, 1997)
+- [ ] **Datronic** (1) vs **Ditronic** (1)
+    - different cities: Podgorica vs Nova Gorica; name similarity 0.88
+    - A: `blisky` Vladimir Perunović (Podgorica, 1994)
+    - B: `izopren` Igor Brecelj (Nova Gorica, 1990)
+- [ ] **Digital Telekom** (1) vs **Unis Telekom** (1)
+    - different cities: Novi Sad vs Mostar; name similarity 0.64
+    - A: `zarkos` Žarko Slavković (Novi Sad, 1992)
+    - B: `bgalic` Boro Galić (Mostar, 1991)
+- [ ] **Eglinre Ristic Ag** (1) vs **RISTIC CO.** (1)
+    - different cities: Basel vs Beograd; shared word: ristic; name similarity 0.63
+    - A: `riki` Voja Ristić (Basel, 1990)
+    - B: `rista.m` Miloš Ristić (Beograd, 1998)
+- [ ] **Ei "1.decembar" Pljevlja** (1) vs **Ei Beograd** (1)
+    - different cities: Pljevlja vs Beograd; name similarity 0.21
+    - A: `d.andjelic` Dragan Anđelić (Pljevlja, 1991)
+    - B: `rboskovic` Radomir Bošković (Beograd, 1991)
+- [ ] **Ei Niš** (2) vs **Ei "1.decembar" Pljevlja** (1)
+    - different cities: Niš vs Pljevlja; name similarity 0.17
+    - A: `eierc` Slobodan Savić (Niš, 1995); `hornet` Goran Veljković (Niš, 1990)
+    - B: `d.andjelic` Dragan Anđelić (Pljevlja, 1991)
+- [ ] **Ei Niš** (2) vs **Ei Beograd** (1)
+    - different cities: Niš vs Beograd; name similarity 0.29
+    - A: `eierc` Slobodan Savić (Niš, 1995); `hornet` Goran Veljković (Niš, 1990)
+    - B: `rboskovic` Radomir Bošković (Beograd, 1991)
+- [ ] **ETF Beograd** (3) vs **Elektronski Fakultet Niš** (1)
+    - different cities: Beograd vs Niš; name similarity 0.72
+    - A: `dpetkovic` Dejan Petković (Beograd, 1990); `dragorad` Drago Milovanović (Beograd, 1990); `nstefanovic` Nenad Stefanović (Beograd, 1990)
+    - B: `vokram` Vladislav Marković (Niš, 1995)
+- [ ] **ETF Beograd** (3) vs **ETF Podgorica** (1)
+    - different cities: Beograd vs Podgorica; name similarity 0.30
+    - A: `dpetkovic` Dejan Petković (Beograd, 1990); `dragorad` Drago Milovanović (Beograd, 1990); `nstefanovic` Nenad Stefanović (Beograd, 1990)
+    - B: `rvpuzovic` Radosav Puzović (Podgorica, 1990)
+- [ ] **Euro Trend Commerce** (1) vs **Trend** (1)
+    - different cities: Beograd vs Bečej; shared word: trend; name similarity 0.45
+    - A: `diablo` Milan Petrović (Beograd, 1996)
+    - B: `tbecej` Trend Bečej (Bečej, 1992)
+- [ ] **Fond Komunalnih Delatnosti** (2) vs **Fond Komunalnih Delatnosti, Ki** (1)
+    - different cities: Sremska Mitrovica vs Kikinda; name similarity 0.96
+    - A: `ljcirkovic` Ljubiša Ćirković (Sr. Mitrovica, 1994); `lcirkovic` Ljubiša Ćirković (Sr. Mitrovica, 1993)
+    - B: `eniac` Srđan Pantović (Kikinda, 1995)
+- [ ] **Ilr - Lola Računari** (1) vs **Infogram Racunari** (1)
+    - different cities: Beograd vs Novi Sad; name similarity 0.71
+    - A: `mmilanov` Mile Milanov (Beograd, 1993)
+    - B: `gari` Marko Lučić (Novi Sad, 1993)
+- [ ] **Infogram Racunari** (1) vs **Racunari I Komunikacije** (1)
+    - different cities: Novi Sad vs Beograd; name similarity 0.43
+    - A: `gari` Marko Lučić (Novi Sad, 1993)
+    - B: `vuki` Branko Vlajnić (Beograd, 1991)
+- [ ] **JKP "Vodovod i Kanalizacija"** (2) vs **Vodovod I Kanalizacija** (1)
+    - different cities: Beograd/Novi Sad vs Subotica; shared word: kanalizacija, vodovod; name similarity 0.93
+    - A: `vladak` Vlada Kandić (Beograd, 1991); `bboz` Borislav Božinović (Novi Sad, 1992)
+    - B: `bkostic` Brčić Kostić (Subotica, 1991)
+- [ ] **Jp "progres"** (1) vs **Progres Autokuca** (1)
+    - different cities: Radoviš vs Beograd; shared word: progres; name similarity 0.64
+    - A: `aristovski` Aco Ristovski (Radovič, 1992)
+    - B: `pidza` Vlada Zlatanović (Beograd, 1992)
+- [ ] **Jp "progres"** (1) vs **Progres-beograd** (1)
+    - different cities: Radoviš vs Beograd; shared word: progres; name similarity 0.67
+    - A: `aristovski` Aco Ristovski (Radovič, 1992)
+    - B: `mjelic` Milovan Jelić (Beograd, 1995)
+- [ ] **Jp "progres"** (1) vs **Progress YU** (1)
+    - different cities: Radoviš vs Beograd; name similarity 0.82
+    - A: `aristovski` Aco Ristovski (Radovič, 1992)
+    - B: `skraljevic` Saša Kraljević (Beograd, 1990)
+- [ ] **LogiC** (1) vs **Logica** (1)
+    - different cities: Zemun vs Ruma; name similarity 0.91
+    - A: `sherman` Stevan Jovićević (Zemun, 1999)
+    - B: `mstanic` Milan Stanić (Ruma, 1992)
+- [ ] **Masinski Fakultet** (1) vs **Masinski Fakultet Skopje** (1)
+    - different cities: Kragujevac vs Skopje; name similarity 0.84
+    - A: `lmilorad` Milorad Bojić (Kragujevac, 1992)
+    - B: `djoskovski` Daniel Joskovski (Skopje, 1991)
+- [ ] **Mikro** (1) vs **Mikro knjiga** (1)
+    - different cities: Ljubljana vs Bgd; shared word: mikro; name similarity 0.62
+    - A: `mkapelj` Miro Kapelj (Ljubljana, 1990)
+    - B: `koncha` Vladimir Koncarevic (Bgd, 1996)
+- [ ] **Mp-soft** (1) vs **Msoft** (1)
+    - different cities: Beograd vs Priboj; name similarity 0.89
+    - A: `michelle` Milorad Perić (Beograd, 1992)
+    - B: `siklic` Davor Siklić (Priboj, 1993)
+- [ ] **Ra Company** (1) vs **Rc Company** (1)
+    - different cities: Zemun vs Beograd; name similarity 0.00
+    - A: `aroma` Aleksandar Romandić (Zemun, 1994)
+    - B: `rccomp` Veselin Svrkota (Beograd, 1994)
+- [ ] **Računari** (11) vs **Infogram Racunari** (1)
+    - different cities: Beograd/Zemun vs Novi Sad; name similarity 0.67
+    - A: `tores` Tomica Orešković (Beograd, 1995); `ejakupovic` Esad Jakupović (Zemun, 1989); `ranka` Ranka Jovanović (Beograd, 1993); `sekretarica` Sekretarica Sezama (Beograd, 1993); +7 more
+    - B: `gari` Marko Lučić (Novi Sad, 1993)
+- [ ] **Radio "S"** (1) vs **Radio Zagreb** (1)
+    - different cities: Beograd vs Zagreb; name similarity 0.59
+    - A: `radios` Dejan Stančević (Beograd, 1998)
+    - B: `radiozg` Lehner Šmit (Zagreb, 1991)
+- [ ] **Radio Beograd** (1) vs **Radio Zagreb** (1)
+    - different cities: Beograd vs Zagreb; name similarity 0.61
+    - A: `sperovic` Slobodan Perović (Beograd, 1991)
+    - B: `radiozg` Lehner Šmit (Zagreb, 1991)
+- [ ] **Rafinerija Nafte Novi Sad** (1) vs **Rafinerija Nafte Pancevo** (1)
+    - different cities: Novi Sad vs Pančevo; shared word: nafte, rafinerija; name similarity 0.77
+    - A: `rafinerija` Viktor Šimala (Novi Sad, 1994)
+    - B: `smiki` Milenko Stojadinov (Pančevo, 1992)
+- [ ] **Smart** (1) vs **Smart Design & Engineering Niš** (1)
+    - different cities: Beograd vs Niš; shared word: smart; name similarity 0.33
+    - A: `nitugard` Dragutin Nikolić (Beograd, 1997)
+    - B: `smart.d.e.` Igor Janićijević (Niš, 1991)
+- [ ] **Software Vision** (1) vs **Vision** (1)
+    - different cities: Beograd vs Gnjilane; shared word: vision; name similarity 0.60
+    - A: `bjoksimovic` Bojan Joksimović (Beograd, 1990)
+    - B: `vision` Mustafa Qemajl (Gnjilane, 1993)
+- [ ] **Tehnička Škola Kikinda** (1) vs **Tehnička Škola Peć** (1)
+    - different cities: Kikinda vs Peć; name similarity 0.72
+    - A: `tskk` Tehnička Škola (Kikinda, 1995)
+    - B: `ljuboc` Ljubodrag Ćeljaj (Peć, 1995)
+- [ ] **Telekom Srbija** (2) vs **Digital Telekom** (1)
+    - different cities: Beograd/Despotovac vs Novi Sad; name similarity 0.52
+    - A: `skole` Ivan Antonijević (Despotovac, 1999); `samo.tako` Milan Mitrović (Beograd, 1998)
+    - B: `zarkos` Žarko Slavković (Novi Sad, 1992)
+- [ ] **Telekom Srbija** (2) vs **Unis Telekom** (1)
+    - different cities: Beograd/Despotovac vs Mostar; name similarity 0.58
+    - A: `skole` Ivan Antonijević (Despotovac, 1999); `samo.tako` Milan Mitrović (Beograd, 1998)
+    - B: `bgalic` Boro Galić (Mostar, 1991)
+- [ ] **Televizija Banja Luka** (2) vs **Televizija Sarajevo** (1)
+    - different cities: Banja Luka vs Sarajevo; shared word: televizija; name similarity 0.65
+    - A: `nameci` Žarko Kecman (Banja Luka, 1992); `tvbl` Aleksandar Šuškalo (Banja Luka, 1992)
+    - B: `tvsarajevo` Televizija Sarajevo (Sarajevo, 1991)
+- [ ] **TRIGON** (1) vs **Trion** (1)
+    - different cities: Beograd vs Niš; name similarity 0.91
+    - A: `trigon` Momčilo Bajić (Beograd, 1996)
+    - B: `zmilenkovic` Zoran Milenković (Niš, 1994)
+- [ ] **WIZARD DOO** (1) vs **WIZARD electronic** (1)
+    - different cities: Zrenjanin vs Ruma; shared word: wizard; name similarity 0.55
+    - A: `wizcomp` Radivoj Vukić (Zrenjanin, 1996)
+    - B: `boskovics` Siniša Bošković (Ruma, 1996)
+
+## 3. Merges already made whose members span several cities
+
+Branch families (PTT, Elektrodistribucija, Zastava…) are expected to span cities and are listed last.
+
+- **Zli Kablovi** (7) — cities: Beograd, Novi Beograd
+    - `snejk` Nenad Marković (Beograd, 1997); `senna` Nenad Marković (Beograd, 1992); `nesha` Nenad Marković (Beograd, 1997); `marshall` Bojan Belović (Novi Beograd, 1993); `baldrick` Mladen Žikić (Novi Beograd, 1996); `pyc.` Marko Domanović (Novi Beograd, 1996); +1 more
+- **Megaplast Promet** (3) — cities: Beograd, Grocka
+    - `acafaca` Aleksandar Pavlović (Grocka, 1996); `mpromet` Megaplast Promet (Beograd, 1994); `guza` Aleksandar Pavlović (Beograd, 1994)
+- **Infotrade** (3) — cities: Koper, Priština, Sremčica
+    - `budima` Valon Budima (Priština, 1993); `jadranp` Jadran Prodan (Koper, 1991); `ddudic` Dragan Dudić (Sremčica, 1992)
+- **Imtel** (3) — cities: Batajnica, Beograd, Zemun
+    - `mbole` Boris Malović (Batajnica, 1993); `mperovic` Miroslav Perović (Zemun, 1989); `imtel` Imtel (Beograd, 1992)
+- **OSA** (3) — cities: Beograd, Smederevska Palanka
+    - `dmark` Dušan Marković (Smed. Palanka, 1994); `branmil` Branko Milivojević (Beograd, 1997); `osari` Boris Damjanović (Beograd, 1991)
+- **PORSCHE** (2) — cities: Kragujevac, Novi Beograd
+    - `bone` Milan Kostadinović (Kragujevac, 1996); `ale.` Aleksandar Milić (Novi Beograd, 1992)
+- **Dekik Corporation.** (2) — cities: Beograd, Zemun
+    - `dekik.` Dejan Krstić (Zemun, 1996); `voyager` Dejan Krstić (Beograd, 1997)
+- **JKP "Vodovod i Kanalizacija"** (2) — cities: Beograd, Novi Sad
+    - `vladak` Vlada Kandić (Beograd, 1991); `bboz` Borislav Božinović (Novi Sad, 1992)
+- **Mds Informacijski Inženjering** (2) — cities: Beograd, Rijeka
+    - `dmedanic` Dejan Medanić (Rijeka, 1990); `james.mds` Zoran Petrić (Beograd, 1993)
+- **Unis Unidata** (2) — cities: Prijedor, Sarajevo
+    - `aimamovic` Aleksandar Imamović (Sarajevo, 1991); `ksefik` Šefik Krkić (Prijedor, 1990)
+- **LIMES** (2) — cities: Despotovac, Novi Beograd
+    - `lime` Slavoljub Miletić (Despotovac, 1997); `limes` Stevo Đurić (Novi Beograd, 1996)
+- **Srbijašume** (2) — cities: Despotovac, Novi Beograd
+    - `msreten` Miodrag Sretenović (Despotovac, 1994); `zmiletic` Zoran Miletić (Novi Beograd, 1994)
+- **Elektrosumadija** (2) — cities: Kragujevac, Mladenovac
+    - `bobaz` Slobodan Živković (Kragujevac, 1992); `esrade` Radeta Marić (Mladenovac, 1993)
+- **Microsys** (2) — cities: Beograd, Bečej
+    - `aspasic` Andreja Spasić (Beograd, 1993); `dzigurski` Bojan Džigurski (Bečej, 1990)
+- **Petrel** (2) — cities: Batajnica, Beograd
+    - `markc` Nebojša Marković (Batajnica(bgd), 1992); `marke` Nebojša Marković (Beograd, 1995)
+- **Comtrad** (2) — cities: Kragujevac, Vrčin
+    - `atasic` Aleksandar Tasić (Vrčin, 1994); `mitrandir` Nikola Ilić (Kragujevac, 1993)
+- **Beomedicina R&D** (2) — cities: Beograd, Novi Beograd
+    - `marks` Marko Sindik (Novi Beograd, 1993); `saks` Saša Aleksandrić (Beograd, 1993)
+- **B&B Soft** (2) — cities: Podgorica, Stara Pazova
+    - `pamir` Miroljub Pavličić (Podgorica, 1996); `bbsoft` Željko Bunčić (Stara Pazova, 1995)
+- **Orka** (2) — cities: Beograd, Vršac
+    - `cuba` Miroslav Rajević (Beograd, 1990); `radicevic` Aleksandar Radičević (Vršac, 1996)
+- **Veterinarski Fakultet** (2) — cities: Beograd, Sarajevo
+    - `dsamek` Davorin Samek (Sarajevo, 1991); `zodex` Dejan Đokić (Beograd, 1992)
+- **Rudarsko-geološki Fakultet** (2) — cities: Beograd (Borča), Tuzla
+    - `siki` Milenko Pušić (Borča, 1991); `edelic` Edin Delić (Tuzla, 1991)
+- **ICM Nikšić** (2) — cities: Beograd, Nikšić
+    - `krimer` Andrej Krimer (Beograd, 1996); `sveselin` Veselin Samardžić (Nikšić, 1992)
+- **Radio Index** (2) — cities: Beograd, Novi Beograd
+    - `index` Radio Index (Beograd, 1993); `nevidljivi` Vladimir Todorović (Novi Beograd, 1996)
+- (branch family) **PTT** (30) — cities: Banja Luka, Beli Manastir, Beograd, Darda, Doboj, Kragujevac, Kruševac, Leskovac, Livno, Ljubljana, Pančevo, Podgorica, Prnjavor, Slavonski Brod, Sokolac, Sombor, Subotica, Tuzla, Valjevo, Varaždin, Vukovar, Čačak, Šabac
+    - `marcony` Milan Marković (Podgorica, 1994); `nebojsal` Nebojša Lazarević (Kruševac, 1996); `adulic` Andrija Dulić (Sombor, 1991); `mvitas` Mladen Vitas (Slavonski Brod, 1990); `tomy` Tomislav Simonović (Leskovac, 1997); `tomislav` Tomislav Prsić (Krusevac, 1996); +24 more
+- (branch family) **Računari** (11) — cities: Beograd, Zemun
+    - `tores` Tomica Orešković (Beograd, 1995); `ejakupovic` Esad Jakupović (Zemun, 1989); `ranka` Ranka Jovanović (Beograd, 1993); `sekretarica` Sekretarica Sezama (Beograd, 1993); `blp` Bajtovi Lične Prirode (Beograd, 1996); `news` Vesti (Beograd, 1996); +5 more
+- (branch family) **Institut "Mihajlo Pupin"** (8) — cities: Beograd, Novi Beograd, Zemun
+    - `smarkov` Stevan Markovic (Beograd, 1992); `terminali` Dušan Aleksić (Zemun, 1996); `mmoma` Momčilo Milosavljević (Zemun, 1994); `strsa` Nebojša Mijatović (Novi Beograd, 1996); `stamenovv` Vasil Stamenov (Beograd, 1996); `mivanovic` Milovan Ivanović (Beograd, 1992); +2 more
+- (branch family) **Elektrodistribucija** (8) — cities: Herceg Novi, Kikinda, Leskovac, Pančevo, Ruma, Sombor, Sremska Mitrovica, Ćuprija
+    - `pedjas` Predrag Stamenković (Leskovac, 1994); `tstanimir` Elektrodistribucija Sombor (Sombor, 1996); `bristic` Boban Ristić (Ćuprija, 1994); `sines` Siniša Stojković (Pančevo, 1993); `rmilankov` Radislav Milankov (Kikinda, 1994); `yaghi` Jagoš Sapurić (Herceg-novi, 1995); +2 more
+- (branch family) **Tanjug** (6) — cities: Beograd, Skopje
+    - `atila` Atila Rafai (Beograd, 1996); `thdtanj` Čedo Pecelj (Beograd, 1991); `tanjug.demo` Agencija Tanjug (Beograd, 1991); `mustafa` Risto Lazarov (Skopje, 1991); `tanjug` Agencija Tanjug (Beograd, 1991); `pasha` Dušan Zupan (Beograd, 1992)
+- (branch family) **PC Press** (6) — cities: Beograd, Zemun
+    - `jelenab` Jelena Batinić (Zemun, 1995); `vjeremic` Vesna Jeremić (Beograd, 1993); `galactus` Vlada Stanimirović (Beograd, 1994); `pc.press` Pc Press (Beograd, 1995); `angie` Anđelka Petrović (Beograd, 1998); `ana.m` Ana Mijušković (Beograd, 1995)
+- (branch family) **RTS** (4) — cities: Beograd, Novi Sad
+    - `3ksc` Aleksandar Crkvenjakov (Beograd, 1991); `pgprts` Ivan Milenković (Beograd, 1996); `fpresetnik` France Presetnik (Beograd, 1994); `ipavlovic` Ivan Pavlović (Novi Sad, 1994)
+- (branch family) **Zastava** (4) — cities: Beograd, Kragujevac
+    - `kamioni` Zastava Kamioni (Kragujevac, 1995); `zasterc` Goran Tešić (Kragujevac, 1997); `zpkerc` Dragan Stevovski (Kragujevac, 1993); `mcvele` Milan Cvetić (Beograd, 1993)
+- (branch family) **Energoprojekt** (3) — cities: Beograd, Novi Beograd
+    - `onebojsa` Nebojša Orlić (Beograd, 1990); `norlic` Nebojša Orlić (Beograd, 1994); `zdravmlad` Zdravko Mlađenović (Novi Beograd, 1992)
+- (branch family) **Radio Pingvin** (3) — cities: Beograd, Kragujevac
+    - `.bata.` Damjan Pelemiš (Beograd, 1993); `pingvin` Radio Pingvin (Beograd, 1995); `abakvs` Vojislav Jovanović (Kragujevac, 1994)
+- (branch family) **Telekom Srbija** (2) — cities: Beograd, Despotovac
+    - `skole` Ivan Antonijević (Despotovac, 1999); `samo.tako` Milan Mitrović (Beograd, 1998)
+
+## 4. Same person, unrelated company names — probably changed jobs
+
+- **"tim-3" - Kraljevo & Kraljevoi** + **Fersped** — same person: Vladimir Đurić; different cities: Kraljevo vs Vršac; name similarity 0.14
+- **A1 Nezavisna Tv D.o.o. Skopje** + **Ultra Computing** — same person: Predrag Čemerikić; same city: Skopje; name similarity 0.12
+- **Agencija Popsoft** + **Mikronova Software** — same person: Vladimir Popović; different cities: Prokuplje vs Beograd; name similarity 0.42
+- **Alcatel Bcn** + **Avc** — same person: Zoran Jovanović; same city: Beograd; name similarity 0.31
+- **aquarius** + **bigfoot** — same person: Miroslav Forlic, Miroslav Forlić; same city: Zemun; name similarity 0.13
+- **Bel Pagette** + **Da** — same person: Zoran Đurić; different cities: Zemun vs Šid; name similarity 0.00
+- **BIGZ** + **Institut Za Rav. Zastitu** — same person: Zoran Nikodijevic, Zoran Nikodijević; different cities: Beograd vs Novi Sad; name similarity 0.17
+- **BiP - odsek za degustaciju** + **NfS** — same person: Zoran Kučeković; same city: Novi Beograd; name similarity 0.08
+- **Blaze Of Glory** + **Blues Brothers** — same person: Branko Mrkonjić; same city: Loznica; name similarity 0.40
+- **Borgis** + **Trion** — same person: Zoran Milenković; different cities: Beograd vs Niš; name similarity 0.18
+- **Castillo Del Mortes** + **Doom Metal** — same person: Viktor Popovic, Viktor Popović; same city: Zemun; name similarity 0.15
+- **Cores** + **Sam sebe predstavljam** — same person: Aleksandar Jovanovic, Aleksandar Jovanović; different cities: Beograd vs Paraćin; name similarity 0.25
+- **Cores** + **joker** — same person: Aleksandar Jovanović; different cities: Beograd vs Čačak; name similarity 0.40
+- **Dead Company** + **Jad&Beda INC** — same person: Nebojša Tijanić; same city: Mladenovac; name similarity 0.36
+- **Digit** + **Computer Beograd** — same person: Branko Aćimović; same city: Beograd; name similarity 0.10
+- **Dijalog** + **Trc** — same person: Slobodan Radišić; same city: Novi Sad; name similarity 0.00
+- **Dimmu Borgir** + **Spider corp.** — same person: Maja Stefanovic, Maja Stefanović; same city: Beograd; name similarity 0.24
+- **Doodoo Voodoo** + **Tugo, kuku, lele mastno.** — same person: Dejan Mančić; same city: Beograd; name similarity 0.13
+- **Doodoo Voodoo** + **munchuh & drewguree** — same person: Dejan Mančić; different cities: Beograd vs Odžaci; name similarity 0.07
+- **Doodoo Voodoo** + **Lomitelj Srdaca Co.** — same person: Dejan Mančić; same city: Beograd; name similarity 0.08
+- **Ei Niš** + **Cadmo** — same person: Goran Veljković; different cities: Niš vs Beograd; name similarity 0.00
+- **Elektro Elzas Co** + **Zajednica Radio Stanica Srbije** — same person: Nebojša Ristić; different cities: Zemun vs Beograd; name similarity 0.15
+- **Elektrodistribucija** + **Ed "kikinda"** — same person: Radislav Milankov; same city: Kikinda; name similarity 0.29
+- **ETF Beograd** + **Bioenergija D.d.** — same person: Nenad Stefanović; same city: Beograd; name similarity 0.26
+- **Euro Trend Commerce** + **S.b.s.** — same person: Milan Petrović; same city: Beograd; name similarity 0.00
+- **Extracom** + **Termoelektrane "n. Tesla" Obre** — same person: Milomir Đurđević; different cities: Novi Beograd vs Obrenovac; name similarity 0.31
+- **Firmoprom** + **Sagittarius, Nis** — same person: Saša Petrović; different cities: Podgorica vs Niš; name similarity 0.17
+- **Fluid-komerc** + **Mup Republike Srbije** — same person: Saša Milićević; different cities: Aleksandrovac vs Beograd; name similarity 0.34
+- **Fuschnik Bbs** + **MDTP&SoundMDTP&Sound** — same person: Marko Kozlica; same city: Beograd; name similarity 0.21
+- **G Print** + **Teg Lazarevac** — same person: Slobodan Zakula, Slobodan Žakula; different cities: Beograd vs Lazarevac; name similarity 0.22
+- **Grin P.o. Beograd** + **Velcom D.o.o.** — same person: Vladimir Živković; same city: Novi Beograd; name similarity 0.22
+- **Hgi "miloje Zakic"** + **TR "PIKOLO"** — same person: Zoran Zamahajev; same city: Kruševac; name similarity 0.27
+- **Info Tim** + **Orbis, Pp** — same person: Jovica Stojoski; same city: Beograd; name similarity 0.17
+- **Insane Shit INC.** + **PP CHOBAN** — same person: Marko Milošević; same city: Novi Beograd; name similarity 0.25
+- **Institut "Vinča"** + **Cyber Plant** — same person: Aleksandar Nikolić; same city: Beograd; name similarity 0.17
+- **Iri** + **Plitvice** — same person: Zoran Petrović; different cities: Zemun vs Beograd; name similarity 0.36
+- **Istrazivanje Besmisla** + **nekrofilicari** — same person: Miodrag Veselinović; same city: Beograd; name similarity 0.18
+- **Izikom - Knin** + **Unicorn** — same person: Miroslav Stanković; different cities: Knin vs Brod; name similarity 0.35
+- **joker** + **Sam sebe predstavljam** — same person: Aleksandar Jovanovic, Aleksandar Jovanović; different cities: Čačak vs Paraćin; name similarity 0.08
+- **Jugodata** + **Finus-komerc Pančevo** — same person: Nenad Jovanović; different cities: Beograd vs Pančevo; name similarity 0.23
+- **Jvm Marketing** + **Lovci na Jelene i ostalu gamad** — same person: Vladimir Jovanović; different cities: Sremska Mitrovica vs Beograd; name similarity 0.16
+- **Jvm Marketing** + **Oslobodilacka Vojska Shumadije** — same person: Vladimir Jovanović; different cities: Sremska Mitrovica vs Beograd; name similarity 0.20
+- **Jvm Marketing** + **Srednja Masinska Skola Nis** — same person: Vladimir Jovanović; different cities: Sremska Mitrovica vs Niš; name similarity 0.29
+- **Lex Enterprises Inc.** + **The Curse of Spawn** — same person: Luka Zlatić; same city: Beograd; name similarity 0.31
+- **Lomitelj Srdaca Co.** + **munchuh & drewguree** — same person: Dejan Mančić; different cities: Beograd vs Odžaci; name similarity 0.20
+- **Lomitelj Srdaca Co.** + **Tugo, kuku, lele mastno.** — same person: Dejan Mančić; same city: Beograd; name similarity 0.25
+- **Lovci na Jelene i ostalu gamad** + **Oslobodilacka Vojska Shumadije** — same person: Vladimir Jovanović; same city: Beograd; name similarity 0.34
+- **Lovci na Jelene i ostalu gamad** + **Srednja Masinska Skola Nis** — same person: Vladimir Jovanović; different cities: Beograd vs Niš; name similarity 0.21
+- **Md Inpro** + **Republicki Geodetski Zavod - B** — same person: Dejan Kovačević; different cities: Smederevska Palanka vs Beograd; name similarity 0.19
+- **Metalflex - Bajina Bašta** + **P.p."peki & Sin"** — same person: Boris Milinkovic, Boris Milinković; different cities: Bajina Bašta vs Beograd; name similarity 0.21
+- **Mp "darling & Co." D.o.o.** + **Studentska Poliklinika** — same person: Jovo Mirković; same city: Beograd; name similarity 0.36
+- **munchuh & drewguree** + **Tugo, kuku, lele mastno.** — same person: Dejan Mančić; different cities: Odžaci vs Beograd; name similarity 0.12
+- **My shit INC.** + **PP CHOBAN** — same person: Marko Milošević; same city: Novi Beograd; name similarity 0.17
+- **novogradnja vranje** + **POPKE & CO.** — same person: Dragan Marković; different cities: Vranje vs Beograd; name similarity 0.18
+- **Novosadski Sajam Dd** + **Šahovska Olimpijada Novi Sad** — same person: Dragan Simić; different cities: Novi Sad vs Sremska Kamenica; name similarity 0.30
+- **Opsenarijum** + **I.z.b.** — same person: Ivan Petrović; different cities: Beograd vs Novi Beograd; name similarity 0.14
+- **Oslobodilacka Vojska Shumadije** + **Srednja Masinska Skola Nis** — same person: Vladimir Jovanović; different cities: Beograd vs Niš; name similarity 0.35
+- **Očna kuća "IRIS"** + **RIZLA +.** — same person: Miloš Bećirović; different cities: Beograd vs Čačak; name similarity 0.24
+- **Plovput** + **Ustanova Za Odrzavanje Unutras** — same person: Vladan Janković; same city: Beograd; name similarity 0.24
+- **Proplanak Stanka Paunovića 82** + **Sparx** — same person: Darko Aranđelović; same city: Niš; name similarity 0.19
+- **Radio Pingvin** + **P.p. "nino"** — same person: Vojislav Jovanovic, Vojislav Jovanović; same city: Kragujevac; name similarity 0.33
+- **Ratoon** + **Rms Electric Corporationtd.** — same person: Dragoslav Radoičić; same city: Ivanjica; name similarity 0.33
+- **RTS** + **Toilet Idiots** — same person: Ivan Pavlović; same city: Beograd; name similarity 0.27
+- **RTS** + **Tv Novi Sad** — same person: Ivan Pavlović; same city: Novi Sad; name similarity 0.33
+- **Sab Corporation** + **Yellow Lemon** — same person: Ivan Jekić; same city: Novi Beograd; name similarity 0.00
+- **Sab Corporation** + **Zoo Station** — same person: Ivan Jekić; same city: Novi Beograd; name similarity 0.31
+- **SIMA & CO** + **Stars!** — same person: Aleksandar Simić; same city: Beograd; name similarity 0.44
+- **Stambena Zadruga "mansarda"** + **TEHNO-KOMERC** — same person: Goran Stojanović; different cities: Negotin vs Leskovac; name similarity 0.24
+- **Stamparija Zebra** + **Tehnohem** — same person: Darko Stefanović; different cities: Beograd vs Bor; name similarity 0.17
+- **Therapy?** + **Zoo Station** — same person: Ivan Jekić; same city: Novi Beograd; name similarity 0.24
+- **Therapy?** + **Yellow Lemon** — same person: Ivan Jekić; same city: Novi Beograd; name similarity 0.11
+- **Therapy?** + **Sab Corporation** — same person: Ivan Jekić; same city: Novi Beograd; name similarity 0.20
+- **Toilet Idiots** + **Tv Novi Sad** — same person: Ivan Pavlović; different cities: Beograd vs Novi Sad; name similarity 0.38
+- **Vojni Servis NBJ** + **Ciklon Soft** — same person: Dragan Đorđević; same city: Beograd; name similarity 0.25
+- **Yellow Lemon** + **Zoo Station** — same person: Ivan Jekić; same city: Novi Beograd; name similarity 0.29
+- **Zli Kablovi** + **KTM** — same person: Nenad Marković; same city: Beograd; name similarity 0.15
+- **Zli Kablovi** + **Hyperopia [music]** — same person: Marko Domanović; same city: Beograd; name similarity 0.25
+- **ČOLOMBO** + **Sts-90, Nis, Pariske Komune 15** — same person: Saša Jovanović; same city: Niš; name similarity 0.13

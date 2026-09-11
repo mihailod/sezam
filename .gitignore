@@ -1,0 +1,87 @@
+# ─── macOS ────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.DocumentRevisions-V100
+.TemporaryItems
+.Trashes
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Icon?
+
+# ─── Xcode / SwiftPM ──────────────────────────────────────────────────────────
+DerivedData/
+app/build/
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+.swiftpm/
+Package.resolved
+.build/
+
+# The .xcodeproj is GENERATED from project.yml by xcodegen -- project.yml is the
+# source of truth. Re-create it with:  cd app && xcodegen generate
+# (Delete this line and commit the project if you'd rather not depend on xcodegen.)
+app/SezamYU.xcodeproj/
+
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# ─── Archive source data (huge, regenerable, not GitHub-sized) ────────────────
+# The ~1 GB static mirror that build_db.py reads. Keep it locally; it is the
+# input to the pipeline, not a source artifact.
+oldsezam.net/
+
+# ─── Build outputs (ignore contents, keep small manifests) ────────────────────
+# Listing the CONTENTS (build/*) rather than the directory lets the negations
+# below actually take effect -- git cannot re-include a file inside an ignored
+# directory.
+/build/*
+!/build/.gitkeep
+!/build/*.json
+
+# Belt and braces: never commit a database or its compressed form anywhere.
+# sezam.db is ~764 MB and the compressed upload ~330 MB; both blow past
+# GitHub's 100 MB per-file limit. They live on archive.org instead.
+*.db
+*.db-wal
+*.db-shm
+*.db.gz
+*.db.xz
+*.db.zst
+*.sqlite
+*.sqlite3
+
+# Cached HTML from the oldsezam.net user harvest (tens of thousands of files).
+# Deleting it only means the harvest re-fetches; it is a cache, not data.
+users_cache/
+
+# ─── Logs / scratch ───────────────────────────────────────────────────────────
+*.log
+nohup.out
+*.pid
+
+# ─── Device deploy (scripts/iPhone.sh) ────────────────────────────────────────
+# Names a specific piece of hardware / your signing team: belongs to this
+# machine, not the repository.
+.device-iphone
+.team
+.xcbuild-device/
