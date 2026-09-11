@@ -11,6 +11,7 @@ struct UserFilterSheet: View {
     let cityFacets: [Facet]
     let companyFacets: [Facet]
     let yearFacets: [Facet]
+    let regionFacets: [Facet]
     let matchCount: Int
     @Binding var filter: UserFilter
 
@@ -21,8 +22,10 @@ struct UserFilterSheet: View {
 
     @State private var citySearch = ""
     @State private var companySearch = ""
+    @State private var regionSearch = ""
     @State private var cityExpanded = false
     @State private var companyExpanded = false
+    @State private var regionExpanded = false
 
     var body: some View {
         NavigationStack {
@@ -46,6 +49,9 @@ struct UserFilterSheet: View {
                     }
                     .padding(.vertical, 4)
                 }
+
+                facetSection("Region · Country", .region, regionFacets,
+                             search: $regionSearch, expanded: $regionExpanded)
             }
             .navigationTitle("Filter on:")
             .navigationBarTitleDisplayMode(.inline)
@@ -120,7 +126,7 @@ struct UserFilterSheet: View {
             HStack {
                 Text(title)
                 Spacer()
-                let picked = section == .city ? filter.cities.count : filter.companies.count
+                let picked = filter.count(in: section)
                 if picked > 0 {
                     Text("\(picked) selected").font(.caption2).foregroundStyle(.tint)
                 }

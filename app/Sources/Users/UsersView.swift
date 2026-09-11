@@ -14,6 +14,7 @@ struct UsersView: View {
     @State private var cityFacets: [Facet] = []
     @State private var companyFacets: [Facet] = []
     @State private var yearFacets: [Facet] = []
+    @State private var regionFacets: [Facet] = []
 
     /// Everything the filter admits. Computed once per filter change and reused
     /// by the sections, the subtitle and the sheet's live match count.
@@ -184,6 +185,7 @@ struct UsersView: View {
                 UserFilterSheet(cityFacets: cityFacets,
                                 companyFacets: companyFacets,
                                 yearFacets: yearFacets,
+                                regionFacets: regionFacets,
                                 matchCount: visible.count,
                                 filter: $filter)
             }
@@ -197,14 +199,16 @@ struct UsersView: View {
                 // Built first, they were ~185 ms of the first tap in a Debug
                 // build -- three quarters of the wait before the list appeared.
                 let users = all
-                let (cities, companies, years) = await Task.detached(priority: .utility) {
+                let (cities, companies, years, regions) = await Task.detached(priority: .utility) {
                     (UserFacets.build(users, field: .city),
                      UserFacets.build(users, field: .company),
-                     UserFacets.years(users))
+                     UserFacets.years(users),
+                     UserFacets.buildRegions(users))
                 }.value
                 cityFacets = cities
                 companyFacets = companies
                 yearFacets = years
+                regionFacets = regions
             }
             .onChange(of: sort) { _, _ in rebuildSections() }
             .onChange(of: filter) { _, _ in rebuildAll() }

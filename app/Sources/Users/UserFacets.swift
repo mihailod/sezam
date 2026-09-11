@@ -129,7 +129,38 @@ enum UserFacets {
                     < ($0.count, SerbianLatin.key($1.label)) }
 
         if let blank = totals[unspecified], blank > 0 {
-            facets.append(Facet(id: unspecified, label: "Not Specified", count: blank))
+            facets.append(Facet(id: unspecified, label: "[Not specified]", count: blank))
+        }
+        return facets
+    }
+
+    /// A city nobody could place. It gets its own row rather than joining Not
+    /// Specified: those members did type something, it just cannot be resolved.
+    static let ambiguous = "[Ambiguous]"
+
+    /// The region a member's city is in. Keyed through the city facet, so an
+    /// approved merge -- Beograd (Borča) into Beograd -- carries over here.
+    static func region(_ u: UserItem) -> String {
+        let city = key(u.city, .city)
+        if city == unspecified { return unspecified }
+        return UserAliases.regionByCity[city] ?? ambiguous
+    }
+
+    /// Regions by user count, with Ambiguous and then Not Specified pinned
+    /// last: both are answers about the data rather than places to filter by.
+    static func buildRegions(_ users: [UserItem]) -> [Facet] {
+        var totals: [String: Int] = [:]
+        for u in users { totals[region(u), default: 0] += 1 }
+        var facets = totals
+            .filter { $0.key != unspecified && $0.key != ambiguous }
+            .map { Facet(id: $0.key, label: $0.key, count: $0.value) }
+        facets.sort { ($1.count, SerbianLatin.key($0.label))
+                    < ($0.count, SerbianLatin.key($1.label)) }
+        if let n = totals[ambiguous], n > 0 {
+            facets.append(Facet(id: ambiguous, label: ambiguous, count: n))
+        }
+        if let n = totals[unspecified], n > 0 {
+            facets.append(Facet(id: unspecified, label: "[Not specified]", count: n))
         }
         return facets
     }
@@ -145,7 +176,7 @@ enum UserFacets {
             .map { Facet(id: $0.key, label: $0.key, count: $0.value) }
             .sorted { $0.id < $1.id }
         if let blank = totals[unspecified], blank > 0 {
-            facets.append(Facet(id: unspecified, label: "Not Specified", count: blank))
+            facets.append(Facet(id: unspecified, label: "[Not specified]", count: blank))
         }
         return facets
     }
@@ -162,9 +193,14 @@ struct UserFilter: Equatable {
     var cities: Set<String> = []
     var companies: Set<String> = []
     var years: Set<String> = []
+    var regions: Set<String> = []
 
-    var isEmpty: Bool { cities.isEmpty && companies.isEmpty && years.isEmpty }
-    var count: Int { cities.count + companies.count + years.count }
+    var isEmpty: Bool {
+        cities.isEmpty && companies.isEmpty && years.isEmpty && regions.isEmpty
+    }
+    var count: Int {
+        cities.count + companies.count + years.count + regions.count
+    }
 
     func matches(_ u: UserItem) -> Bool {
         if !cities.isEmpty, !cities.contains(UserFacets.key(u.city, .city)) { return false }
@@ -172,6 +208,7 @@ struct UserFilter: Equatable {
            !companies.contains(UserFacets.companyKey(u)) { return false }
         if !years.isEmpty,
            !years.contains(UserItem.year(u.joinedISO) ?? UserFacets.unspecified) { return false }
+        if !regions.isEmpty, !regions.contains(UserFacets.region(u)) { return false }
         return true
     }
 
@@ -180,6 +217,7 @@ struct UserFilter: Equatable {
         case .city:    toggle(id, &cities)
         case .company: toggle(id, &companies)
         case .year:    toggle(id, &years)
+        case .region:  toggle(id, &regions)
         }
     }
 
@@ -188,6 +226,17 @@ struct UserFilter: Equatable {
         case .city:    return cities.contains(id)
         case .company: return companies.contains(id)
         case .year:    return years.contains(id)
+        case .region:  return regions.contains(id)
+        }
+    }
+
+    /// How many values are ticked in one section, for its header.
+    func count(in section: FilterSection) -> Int {
+        switch section {
+        case .city:    return cities.count
+        case .company: return companies.count
+        case .year:    return years.count
+        case .region:  return regions.count
         }
     }
 
@@ -196,4 +245,4 @@ struct UserFilter: Equatable {
     }
 }
 
-enum FilterSection { case city, company, year }
+enum FilterSection { case city, company, year, region }
