@@ -144,4 +144,17 @@ if [[ "${1:-}" != "no-launch" ]]; then
   xcrun devicectl device process launch \
     --device "$DEVICE" --terminate-existing "$BUNDLE" >/dev/null
 fi
+
+# Housekeeping. Every `simctl install` strands the previous bundle in
+# containermanagerd's Dead folder, and since the app began shipping the 333 MB
+# archive that is a third of a gigabyte per reinstall. A device deploy does not
+# create those, but this script is the one that gets run, so it is where the
+# sweep is worth having.
+#
+# Deliberately not fatal and deliberately last: the app is already installed and
+# launched by this point, and losing a deploy to a failed clean-up would be
+# absurd. `set -e` is in force, hence the guard.
+if [[ -x scripts/sim_gc.sh ]]; then
+  scripts/sim_gc.sh || echo "==> (simulator clean-up skipped)"
+fi
 echo "==> done"
