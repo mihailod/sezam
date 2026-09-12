@@ -90,7 +90,9 @@ struct SearchView: View {
             }
             .navigationTitle("Search Sezam")
             .archiveDestinations(router)
-            .searchable(text: $controller.query, prompt: Self.prompt)
+            .searchable(text: $controller.query,
+                        placement: Self.searchPlacement,
+                        prompt: "Search messages and people")
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
         }
@@ -102,11 +104,14 @@ struct SearchView: View {
         }
     }
 
-    /// The iPad puts the search field in the toolbar at a fixed compact width,
-    /// where the phone's prompt truncates to "Search messages...". A shorter
-    /// one that still names both things you can search fits whole.
-    private static var prompt: String {
-        Device.isPad ? "Messages, people" : "Search messages and people"
+    /// On iPad the default placement is a compact field in the toolbar beside
+    /// the tab bar -- an idle affordance that expands only once it has focus,
+    /// and narrow enough at rest that the prompt truncates to "Search
+    /// messages...". The drawer is what the phone already uses: a full-width
+    /// field under the title, which is both the larger target and the one
+    /// that shows what you can search without being tapped first.
+    private static var searchPlacement: SearchFieldPlacement {
+        Device.isPad ? .navigationBarDrawer(displayMode: .always) : .automatic
     }
 
     /// "People (1 hit)", "Messages (254,701 hits)".
