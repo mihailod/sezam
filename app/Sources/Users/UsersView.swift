@@ -191,12 +191,13 @@ struct UsersView: View {
             }
             .navigationTitle("Sezam Users")
             .archiveDestinations(router)
-            // Same placement rule as the Search tab: the phone's default is
-            // already a full-width field under the title, an iPad's is a
-            // cramped one in the toolbar.
+            // The drawer on every device, not just iPad. Left to `.automatic`,
+            // iOS 26 promotes the field into the navigation bar itself, where
+            // it displaces the large title and the two toolbar buttons -- this
+            // screen needs all three at once. The drawer keeps the field a
+            // full-width row under "Sezam Users".
             .searchable(text: $query,
-                        placement: Device.isPad
-                            ? .navigationBarDrawer(displayMode: .always) : .automatic,
+                        placement: .navigationBarDrawer(displayMode: .always),
                         prompt: "Search name, city or company")
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
