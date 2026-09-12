@@ -90,7 +90,7 @@ struct SearchView: View {
             }
             .navigationTitle("Search Sezam")
             .archiveDestinations(router)
-            .searchable(text: $controller.query, prompt: "Search messages and people")
+            .searchable(text: $controller.query, prompt: Self.prompt)
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
         }
@@ -100,6 +100,13 @@ struct SearchView: View {
             guard !Task.isCancelled else { return }
             await controller.run(controller.query)
         }
+    }
+
+    /// The iPad puts the search field in the toolbar at a fixed compact width,
+    /// where the phone's prompt truncates to "Search messages...". A shorter
+    /// one that still names both things you can search fits whole.
+    private static var prompt: String {
+        Device.isPad ? "Messages, people" : "Search messages and people"
     }
 
     /// "People (1 hit)", "Messages (254,701 hits)".
@@ -121,8 +128,13 @@ struct SearchView: View {
                                             .font(.caption2).foregroundStyle(.secondary)
                                     }
                                 }
+                                // The index matches on the real name too, so a
+                                // hit often makes sense only once it is shown.
+                                if let name = person.fullName, !name.isEmpty {
+                                    Text(name).font(.caption).foregroundStyle(.primary.opacity(0.8))
+                                }
                                 if !person.subtitle.isEmpty {
-                                    Text(person.subtitle).font(.caption).foregroundStyle(.secondary)
+                                    Text(person.subtitle).font(.caption2).foregroundStyle(.secondary)
                                 }
                             }
                             .padding(.vertical, 2)
