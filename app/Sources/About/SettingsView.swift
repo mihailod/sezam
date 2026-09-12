@@ -100,12 +100,16 @@ struct SettingsView: View {
                     .disabled(!bootstrap.canRedownload)
 
                     if !bootstrap.canRedownload, let next = bootstrap.redownloadAvailableAt {
-                        Text("Available again \(next.formatted(date: .abbreviated, time: .shortened)).")
+                        Text("Available again \(ArchiveDate.day(next)) "
+                             + "\(next.formatted(date: .omitted, time: .shortened)).")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 } footer: {
-                    Text("The Archive is normally downloaded just once for offline "
-                         + "access. Tap only if it appears corrupted or incomplete.")
+                    Text(BundledArchive.isAvailable
+                         ? "The Archive is already bundled for offline access. "
+                           + "Tap only if it appears corrupted or incomplete."
+                         : "The Archive is normally downloaded just once for offline "
+                           + "access. Tap only if it appears corrupted or incomplete.")
                 }
 
                 // Last item in the panel: heading and text share one card.

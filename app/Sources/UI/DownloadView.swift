@@ -7,15 +7,30 @@ struct DownloadView: View {
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
-            Image(systemName: "arrow.down.circle")
+            Image(systemName: icon)
                 .font(.system(size: 56)).foregroundStyle(.tint)
-            Text(isDownloading ? "Sezam Archive Downloading" : "Sezam Archive")
-                .font(.title2.weight(.semibold))
-            Text(headline)
-                .font(.callout).foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 32)
+            VStack(spacing: 4) {
+                Text("Sezam Archive")
+                    .font(.largeTitle.bold())
+                if let activity {
+                    Text(activity)
+                        .font(.title3.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .multilineTextAlignment(.center)
+
+            // Nothing between the title and the bar while an install is simply
+            // running: the two lines above already say what is happening. Only
+            // a failure, or a reason the archive is being replaced, earns a
+            // paragraph here.
+            if let message {
+                Text(message)
+                    .font(.callout).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 32)
+            }
 
             if bootstrap.installer.isBusy {
                 VStack(spacing: 8) {
@@ -26,7 +41,7 @@ struct DownloadView: View {
                 .padding(.horizontal, 32)
             } else {
                 Button {
-                    Task { await bootstrap.requestInstall() }
+                    Task { await start() }
                 } label: {
                     Text(buttonTitle)
                         .frame(maxWidth: .infinity)
@@ -47,6 +62,11 @@ struct DownloadView: View {
             if bootstrap.autoStartInstall {
                 bootstrap.autoStartInstall = false
                 await bootstrap.requestInstall()
+            } else if bootstrap.canInstallFromBundle {
+                // Nothing to ask and nothing to fetch: begin the moment the
+                // screen appears, so the first launch is a progress bar rather
+                // than a button the user has no reason not to tap.
+                await bootstrap.installBundled()
             } else {
                 await bootstrap.prefetchDownloadSize()
             }
@@ -60,11 +80,38 @@ struct DownloadView: View {
         }
     }
 
+    /// Whether this screen is unpacking the copy that shipped with the app
+    /// rather than fetching one. Everything the screen says branches on it.
+    private var isBundled: Bool { bootstrap.isBundledInstall || bootstrap.canInstallFromBundle }
+
+    /// A box being opened, against an arrow coming down from a server.
+    private var icon: String { isBundled ? "shippingbox" : "arrow.down.circle" }
+
+    /// The second title line: what is being done to the archive right now, or
+    /// nil before anything has started, when the button says it instead.
+    private var activity: String? {
+        guard isDownloading else { return nil }
+        return isBundled ? "Decompressing" : "Downloading"
+    }
+
+    /// Starts whichever install this screen is for. The bundled one needs no
+    /// consent -- there is nothing to consent to -- so it goes straight to work.
+    private func start() async {
+        if bootstrap.canInstallFromBundle {
+            await bootstrap.installBundled()
+        } else {
+            await bootstrap.requestInstall()
+        }
+    }
+
     /// An attempt that failed is worth offering again by name. Otherwise the
     /// button says what it will do, with the size once a manifest has answered:
     /// a re-download the user asked for is not a retry, nothing went wrong.
     private var buttonTitle: String {
         if case .failed = bootstrap.installer.phase { return "Try Again" }
+        // No size on the bundled button: the megabytes were the warning about
+        // a transfer, and there is no transfer.
+        if isBundled { return "Decompress the Archive" }
         let size = bootstrap.knownDownloadSize.map { " (\(Megabytes.text($0)))" } ?? ""
         // Asked for in Settings, or forced by an archive that will not pass its
         // checks: either way a copy is already installed, so this replaces it.
@@ -80,35 +127,47 @@ struct DownloadView: View {
         }
     }
 
-    /// Every byte is in. Checking, expanding and opening the archive still take
-    /// a while, and a bar parked at 100% with nothing said looks stuck.
+    /// The work the bar was tracking is finished and something slower-witted
+    /// is happening -- a bar parked at 100% with nothing said looks stuck.
+    ///
+    /// For a download that includes the expansion, which comes after every
+    /// byte is in. For the bundled install the expansion *is* the work, so
+    /// there it is the one phase this must not claim.
     private var isInitializing: Bool {
         switch bootstrap.installer.phase {
         case let .downloading(received, total): return total > 0 && received >= total
-        case .verifyingDownload, .expanding, .verifyingDatabase, .done: return true
+        case .expanding: return !isBundled
+        case .verifyingDownload, .verifyingDatabase, .done: return true
         default: return false
         }
     }
 
     // The span is written out rather than read from the archive: this screen
     // exists because there is no archive yet to read it from.
-    private var headline: String {
+    private var message: String? {
         if case let .failed(msg) = bootstrap.installer.phase { return msg }
-        if isDownloading {
-            return "The complete 1989–1999 Sezam Archive is now downloading "
-                + "for offline use by the app."
-        }
+        // Whatever is happening is named in the title and measured by the bar.
+        if isDownloading { return nil }
         // A re-download the user asked for already says so in the reason; a
         // second sentence would only repeat it. A damaged or missing archive
         // states the problem, so there it is worth saying what happens next.
         if let reason {
-            return bootstrap.isUserRequestedRedownload ? reason : "\(reason)\nDownloading it again."
+            if bootstrap.isUserRequestedRedownload { return reason }
+            return isBundled ? "\(reason)\nDecompressing it again."
+                             : "\(reason)\nDownloading it again."
         }
+        // The bundled archive needs no explanation before it starts -- it
+        // starts by itself, and the user is looking at this for a moment. A
+        // download is a transfer they should be told about first.
+        if isBundled { return nil }
         return "The complete 1989–1999 Sezam Archive needs to be downloaded once "
             + "for offline use by the app."
     }
 
     private var fraction: Double {
+        // The bundled install's own progress, before the shared checks below
+        // would round it up to a finished download.
+        if case let .expanding(p) = bootstrap.installer.phase, isBundled { return p }
         if isInitializing { return 1 }
         if case let .downloading(received, total) = bootstrap.installer.phase, total > 0 {
             return Double(received) / Double(total)
@@ -117,7 +176,14 @@ struct DownloadView: View {
     }
 
     private var detail: String {
-        if isInitializing { return "Download done! Initializing…" }
+        if case let .expanding(p) = bootstrap.installer.phase, isBundled {
+            // A percentage only: there are no megabytes crossing anything, and
+            // quoting the compressed size here would read as a transfer.
+            return "\(Int(p * 100))% decompressed"
+        }
+        if isInitializing {
+            return isBundled ? "Decompression done! Initializing…" : "Download done! Initializing…"
+        }
         switch bootstrap.installer.phase {
         case .fetchingManifest: return "Contacting archive…"
         case let .downloading(received, total):
@@ -146,7 +212,8 @@ enum Megabytes {
 }
 
 /// The system linear progress bar is a hairline, barely visible on a phone;
-/// `scaleEffect` would thicken it but squash its rounded ends.
+/// `scaleEffect` would thicken it but squash its rounded ends. At this weight
+/// it reads as the subject of the screen rather than a detail on it.
 private struct DownloadBar: View {
     let value: Double
 
@@ -159,7 +226,7 @@ private struct DownloadBar: View {
                 Capsule().fill(.tint).frame(width: g.size.width * clamped)
             }
         }
-        .frame(height: 8)
+        .frame(height: 22)
         .accessibilityElement()
         .accessibilityLabel("Download progress")
         .accessibilityValue("\(Int(clamped * 100)) percent")

@@ -151,7 +151,7 @@ struct SearchView: View {
                 ForEach(controller.messages) { hit in
                     NavigationLink(value: ThreadTarget(
                         topic: TopicSummary(family: hit.family, name: hit.topic,
-                                            messages: 0, firstYear: nil, lastYear: nil),
+                                            messages: 0, firstMonth: nil, lastMonth: nil),
                         anchor: MessageAnchor(topicID: hit.topicID, seq: hit.seq))) {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {

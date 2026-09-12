@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "database_url": "https://archive.org/download/sezam.db/sezam.db.gz",
+  "compressed_size": 333257432,
+  "compressed_sha256": "468b90ec1302be247c12668497c6af500d3684eb9d48b029e434d2d1e76892b0",
+  "uncompressed_size": 773566464,
+  "message_count": 572645,
+  "user_count": 8105,
+  "built_at": "2026-09-09T20:17:35"
+}

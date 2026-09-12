@@ -256,8 +256,8 @@ private struct UserRow: View {
                         .font(.caption2).foregroundStyle(.secondary)
                 }
                 Spacer()
-                if sort.indexesByYear, let v = sort.value(user) {
-                    Text(String(v.prefix(10))).font(.caption2).foregroundStyle(.secondary)
+                if sort.indexesByYear, let v = ArchiveDate.day(sort.value(user)) {
+                    Text(v).font(.caption2).foregroundStyle(.secondary)
                 }
                 // Message count already sits beside the username, so the
                 // numeric sort needs nothing extra on the right.

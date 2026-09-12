@@ -99,21 +99,36 @@ enum UsersRepository {
     /// Keyset page of one author's messages, ordered by message id as asked.
     /// Served by ix_msg_author_id -- without that index this scans the whole
     /// table by rowid (629 ms); with it, 0.11 ms.
-    static func messages(authorID: Int64, afterID: Int64, limit: Int) throws -> [AuthorMessage] {
+    /// Keyset page of one author's messages in true chronological order,
+    /// oldest first or newest first.
+    ///
+    /// Ordered by `epoch`, never by id: ids were handed out as the mirror was
+    /// parsed, so id order runs topic by topic. For mikis the id-first message
+    /// is from March 1995 while his actual first is from September 1993.
+    ///
+    /// The id breaks ties — 88,878 author-and-minute groups hold more than one
+    /// message, and a keyset walk without a total order repeats or skips rows.
+    /// Served by ix_msg_author(author_id, epoch), walked backwards for newest.
+    static func messages(authorID: Int64, afterEpoch: Int64, afterID: Int64,
+                         limit: Int, newestFirst: Bool = false) throws -> [AuthorMessage] {
         guard let pool else { return [] }
+        let head = """
+            SELECT m.id AS id, m.seq AS seq, m.ts AS ts, m.epoch AS epoch,
+                   m.body AS body, m.topic_id AS topic_id, t.name AS topic,
+                   c.family AS family, c.volume AS volume
+            FROM message m
+            JOIN topic t      ON t.id = m.topic_id
+            JOIN conference c ON c.id = t.conf_id
+            WHERE m.author_id = ?
+            """
+        let sql = newestFirst
+            ? head + " AND (m.epoch, m.id) < (?, ?) ORDER BY m.epoch DESC, m.id DESC LIMIT ?"
+            : head + " AND (m.epoch, m.id) > (?, ?) ORDER BY m.epoch, m.id LIMIT ?"
         return try pool.read { db in
-            try Row.fetchAll(db, sql: """
-                SELECT m.id AS id, m.seq AS seq, m.ts AS ts, m.body AS body,
-                       m.topic_id AS topic_id, t.name AS topic,
-                       c.family AS family, c.volume AS volume
-                FROM message m
-                JOIN topic t      ON t.id = m.topic_id
-                JOIN conference c ON c.id = t.conf_id
-                WHERE m.author_id = ? AND m.id > ?
-                ORDER BY m.id
-                LIMIT ?
-                """, arguments: [authorID, afterID, limit]).map {
+            try Row.fetchAll(db, sql: sql,
+                             arguments: [authorID, afterEpoch, afterID, limit]).map {
                 AuthorMessage(id: $0["id"], seq: $0["seq"] ?? 0, timestamp: $0["ts"],
+                              epoch: $0["epoch"] ?? 0,
                               body: $0["body"] ?? "", topicID: $0["topic_id"] ?? 0,
                               topic: $0["topic"], family: $0["family"], volume: $0["volume"])
             }
@@ -130,6 +145,8 @@ struct AuthorMessage: Identifiable, Hashable {
     let id: Int64
     let seq: Int
     let timestamp: String?
+    /// Seconds since 1970, the key the list is ordered by.
+    let epoch: Int64
     let body: String
     let topicID: Int64
     let topic: String
@@ -138,13 +155,7 @@ struct AuthorMessage: Identifiable, Hashable {
 
     var location: String { "\(family) · \(topic) · #\(seq)" }
 
-    var displayDate: String {
-        guard let ts = timestamp, ts.count >= 10 else { return "" }
-        let d = ts.prefix(10).split(separator: "-")
-        guard d.count == 3, let m = Int(d[1]) else { return String(ts.prefix(10)) }
-        let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-        return "\(d[2]) \(months[max(0, min(11, m - 1))]) \(d[0])"
-    }
+    var displayDate: String { ArchiveDate.day(timestamp) ?? "" }
 
     var preview: String {
         body.replacingOccurrences(of: "\r\n", with: " ")

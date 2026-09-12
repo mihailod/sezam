@@ -61,6 +61,33 @@ final class AppBootstrap {
     /// the reason shown above it.
     private(set) var isUserRequestedRedownload = false
 
+    /// True while the archive being installed is the one that shipped inside
+    /// the app, so the screen can talk about decompressing rather than
+    /// downloading. Stays set on failure, so the error is shown in the same
+    /// language as the attempt that produced it.
+    private(set) var isBundledInstall = false
+
+    /// Whether this install can be served from the app bundle rather than the
+    /// network: the first launch, and equally a damaged archive, where making
+    /// the user fetch 333 MB they already have would be perverse. A
+    /// re-download asked for in Settings deliberately does not qualify --
+    /// fetching a fresh copy is the entire point of it.
+    var canInstallFromBundle: Bool {
+        BundledArchive.isAvailable && !isUserRequestedRedownload
+    }
+
+    /// The first launch: expand what shipped with the app. No consent prompt,
+    /// because nothing is transferred and nothing leaves the device.
+    func installBundled() async {
+        guard let manifest = BundledArchive.manifest, let gz = BundledArchive.gzURL else { return }
+        isBundledInstall = true
+        await installer.installFromBundle(manifest, gz: gz)
+        if case .done = installer.phase {
+            isBundledInstall = false
+            state = .ready
+        }
+    }
+
     /// Hands off to the download screen, which owns the single size-consent
     /// prompt. The database is only closed once a replacement is verified, so
     /// cancelling here leaves the installed archive untouched.

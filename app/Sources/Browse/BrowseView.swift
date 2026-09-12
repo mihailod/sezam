@@ -22,7 +22,7 @@ struct BrowseView: View {
                     NavigationLink(value: fam) {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(fam.family).font(.headline)
-                            Text("\(count(fam.messages)) messages · \(fam.topics) topics · \(fam.yearSpan)")
+                            Text("\(count(fam.messages)) messages · \(fam.topics) topics · \(fam.span)")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         .padding(.vertical, 2)
@@ -42,6 +42,11 @@ struct BrowseView: View {
                             Text("Sezam").font(.largeTitle.bold())
                             if let span { Text(span).font(.title2.bold()) }
                         }
+                        // "Sezam Oct 1989 – Dec 1999" is close to the width of
+                        // a phone, and at larger text sizes past it: shrink to
+                        // fit rather than truncate the span to an ellipsis.
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -65,15 +70,26 @@ struct BrowseView: View {
 
     private func count(_ n: Int) -> String { num.string(from: NSNumber(value: n)) ?? "\(n)" }
 
-    /// "Sezam 1989–1999": the span the whole archive covers, taken from the
-    /// rows rather than hard-coded, and written with the same en dash as the
-    /// rows' own spans. Plain "Sezam" until the rows are in.
-    private var title: String { span.map { "Sezam \($0)" } ?? "Sezam" }
+    /// The string title. On iOS 26 the large title is the view below, which
+    /// carries the span, and this string is only what the bar collapses to and
+    /// what the back button says -- "Sezam Oct 1989 – Dec 1999" would be
+    /// truncated in both places, so there it stays the bare name. Older
+    /// systems have only this string, so there it carries the span.
+    private var title: String {
+        if #available(iOS 26, *) { return "Sezam" }
+        return span.map { "Sezam \($0)" } ?? "Sezam"
+    }
 
+    /// "Oct 1989 – Dec 1999": what the whole archive covers, taken from the
+    /// rows rather than hard-coded. Nil until the rows are in.
+    ///
+    /// min/max over the stored "1989-10" form, which sorts in date order, so
+    /// the earliest month wins rather than the earliest month number.
     private var span: String? {
-        guard let first = families.compactMap(\.firstYear).min(),
-              let last = families.compactMap(\.lastYear).max() else { return nil }
-        return first == last ? "\(first)" : "\(first)–\(last)"
+        let first = families.compactMap(\.firstMonth).min()
+        let last = families.compactMap(\.lastMonth).max()
+        guard first != nil, last != nil else { return nil }
+        return ArchiveDate.monthSpan(first, last)
     }
 
     /// Rendered as a caption row rather than `navigationSubtitle`, which is

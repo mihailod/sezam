@@ -13,7 +13,7 @@ enum AppInfo {
     static let databaseCredit = "Archive: public domain (oldsezam.net)"
 
     /// The heading the archive notice is published under.
-    static let archiveNoticeHeading = "oldsezam.net/Privacy (as of 9/9/2026):"
+    static let archiveNoticeHeading = "oldsezam.net/Privacy (as of 9 Sep 2026):"
 
     /// The archive notice, reproduced from the original site.
     static let archiveNotice = """

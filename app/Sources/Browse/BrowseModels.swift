@@ -4,28 +4,24 @@ struct ConferenceFamily: Identifiable, Hashable {
     let family: String
     let messages: Int
     let topics: Int
-    let firstYear: Int?
-    let lastYear: Int?
+    /// The ends of the span as stored, "1995-02": sortable, and the form
+    /// `ArchiveDate` reads. Nil for the two topics with no timestamps at all.
+    let firstMonth: String?
+    let lastMonth: String?
     var id: String { family }
 
-    var yearSpan: String {
-        guard let f = firstYear, let l = lastYear else { return "" }
-        return f == l ? "\(f)" : "\(f)–\(l)"
-    }
+    var span: String { ArchiveDate.monthSpan(firstMonth, lastMonth) }
 }
 
 struct TopicSummary: Identifiable, Hashable {
     let family: String
     let name: String
     let messages: Int
-    let firstYear: Int?
-    let lastYear: Int?
+    let firstMonth: String?
+    let lastMonth: String?
     var id: String { name }
 
-    var yearSpan: String {
-        guard let f = firstYear, let l = lastYear else { return "" }
-        return f == l ? "\(f)" : "\(f)–\(l)"
-    }
+    var span: String { ArchiveDate.monthSpan(firstMonth, lastMonth) }
 }
 
 struct MessageRow: Identifiable, Hashable {
@@ -39,16 +35,8 @@ struct MessageRow: Identifiable, Hashable {
     let replyAuthor: String?
     let volume: String
 
-    /// "19 Nov 1991 07:54" from the stored ISO form.
-    var displayDate: String {
-        guard let ts = timestamp, ts.count >= 16 else { return "" }
-        let d = ts.prefix(10).split(separator: "-")
-        let time = ts.suffix(5)
-        guard d.count == 3, let m = Int(d[1]) else { return String(ts.prefix(10)) }
-        let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-        let mon = (1...12).contains(m) ? months[m - 1] : d[1].description
-        return "\(d[2]) \(mon) \(d[0]) \(time)"
-    }
+    /// "19 Nov 1991 07:54": in a thread the time of day is worth showing.
+    var displayDate: String { ArchiveDate.dayTime(timestamp) ?? "" }
 
     var replyLabel: String? {
         guard let seq = replySeq else { return nil }

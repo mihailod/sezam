@@ -82,39 +82,73 @@ final class DatabaseInstaller: NSObject {
                 throw InstallError.checksumMismatch
             }
 
-            phase = .expanding(0)
-            let staged = DatabaseLocation.scratchDirectory.appendingPathComponent("staged.db")
-            try? FileManager.default.removeItem(at: staged)
-            try await Task.detached(priority: .userInitiated) {
-                try GzipDecoder.decompress(from: gz, to: staged) { p in
-                    Task { @MainActor in self.phase = .expanding(p) }
-                }
-            }.value
-            try? FileManager.default.removeItem(at: gz)
-
-            // Move into place only after expansion succeeds, so a failed install
-            // never destroys a working database.
-            phase = .verifyingDatabase
-            DatabaseStore.close()
-            let final = DatabaseLocation.databaseURL
-            try? FileManager.default.removeItem(at: final)
-            try FileManager.default.moveItem(at: staged, to: final)
-            DatabaseLocation.excludeFromBackup(final)
-
-            // `quick_check` reads all 773 MB, so this one is off the main actor
-            // for the same reason as the two above.
-            let verified = await Task.detached(priority: .userInitiated) {
-                DatabaseStore.verify(against: manifest)
-            }.value
-            if case let .failure(err) = verified {
-                throw err
-            }
-            try DatabaseLocation.writeInstalledManifest(manifest)
-            try DatabaseStore.open()
-            phase = .done
+            try await expandAndActivate(gz: gz, manifest: manifest, removingSource: true)
         } catch {
             phase = .failed((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
         }
+    }
+
+    /// Installs the archive that shipped inside the app: the same work as the
+    /// tail of `install`, with nothing before it.
+    ///
+    /// No manifest fetch and no download, so no consent either -- nothing
+    /// leaves the device and nothing is transferred. The checksum step is gone
+    /// too: the .gz is inside a code-signed bundle, so iOS has already
+    /// established that it is the file we shipped, and re-hashing 333 MB would
+    /// add seconds to the first launch to learn what is already known. What
+    /// stays is the expansion's own ISIZE check and the `quick_check` below,
+    /// which are about the copy being *written* here and are still worth doing.
+    func installFromBundle(_ manifest: ArchiveManifest, gz: URL) async {
+        do {
+            // Only the expanded database needs room: the .gz is part of the
+            // app, already on disk, and is not consumed by expanding it.
+            let needed = manifest.uncompressedSize
+            let free = DatabaseLocation.freeSpaceBytes()
+            guard free > needed else {
+                throw InstallError.insufficientSpace(needed: needed, available: free)
+            }
+            try await expandAndActivate(gz: gz, manifest: manifest, removingSource: false)
+        } catch {
+            phase = .failed((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
+        }
+    }
+
+    /// Expand, put in place, check, open. Shared by both installs so the two
+    /// cannot drift; `removingSource` is false for the bundled .gz, which
+    /// belongs to the app and must survive to serve the next reinstall.
+    private func expandAndActivate(gz: URL,
+                                   manifest: ArchiveManifest,
+                                   removingSource: Bool) async throws {
+        phase = .expanding(0)
+        let staged = DatabaseLocation.scratchDirectory.appendingPathComponent("staged.db")
+        try? FileManager.default.removeItem(at: staged)
+        try await Task.detached(priority: .userInitiated) {
+            try GzipDecoder.decompress(from: gz, to: staged) { p in
+                Task { @MainActor in self.phase = .expanding(p) }
+            }
+        }.value
+        if removingSource { try? FileManager.default.removeItem(at: gz) }
+
+        // Move into place only after expansion succeeds, so a failed install
+        // never destroys a working database.
+        phase = .verifyingDatabase
+        DatabaseStore.close()
+        let final = DatabaseLocation.databaseURL
+        try? FileManager.default.removeItem(at: final)
+        try FileManager.default.moveItem(at: staged, to: final)
+        DatabaseLocation.excludeFromBackup(final)
+
+        // `quick_check` reads all 773 MB, so this one is off the main actor
+        // for the same reason as the hashing and expansion above.
+        let verified = await Task.detached(priority: .userInitiated) {
+            DatabaseStore.verify(against: manifest)
+        }.value
+        if case let .failure(err) = verified {
+            throw err
+        }
+        try DatabaseLocation.writeInstalledManifest(manifest)
+        try DatabaseStore.open()
+        phase = .done
     }
 
     /// Tries each candidate in order and returns the first that answers with a

@@ -14,7 +14,7 @@ struct TopicListView: View {
                 NavigationLink(value: ThreadTarget(topic: topic)) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(topic.name).font(.body)
-                        Text("\(count(topic.messages)) messages · \(topic.yearSpan)")
+                        Text("\(count(topic.messages)) messages · \(topic.span)")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     .padding(.vertical, 2)
