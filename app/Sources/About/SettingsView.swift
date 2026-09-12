@@ -128,7 +128,7 @@ struct SettingsView: View {
                     .padding(.vertical, 2)
                 }
 
-                // Epigraphs close the panel, one card each.
+                // Epigraphs, then the credits card closes the panel.
                 ForEach(AppInfo.epigraphs) { epigraph in
                     Section {
                         VStack(alignment: .leading, spacing: 6) {
@@ -143,6 +143,18 @@ struct SettingsView: View {
                         }
                         .padding(.vertical, 2)
                     }
+                }
+
+                Section {
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(AppInfo.credits, id: \.self) { line in
+                            Text(line)
+                                .font(.callout)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 2)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)

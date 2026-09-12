@@ -36,6 +36,16 @@ enum AppInfo {
                  author: "Clifford Stoll"),
     ]
 
+    /// The card that closes the panel. Three paragraphs, kept exactly as
+    /// written -- the lower case and the handles are the register of the board
+    /// these people posted on, not a style slip to be tidied up.
+    static let credits = [
+        "created by mihailod",
+        "shouts go to d.m. / davor, kcurcic, mrbin, shoom, nradeta, wisil, "
+            + "jujo, baltazar, spantic, ikordic, cupko",
+        "dedicated to dejanr",
+    ]
+
     static var version: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
     }
