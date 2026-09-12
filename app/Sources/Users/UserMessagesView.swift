@@ -41,13 +41,23 @@ struct UserMessagesView: View {
         List {
             Section {
                 VStack(alignment: .leading, spacing: 3) {
-                    if let n = user.fullName, !n.isEmpty {
-                        Text(n).font(.headline)
+                    if user.isListed {
+                        if let n = user.fullName, !n.isEmpty {
+                            Text(n).font(.headline)
+                        }
+                        if !user.subtitle.isEmpty {
+                            Text(user.subtitle).font(.caption).foregroundStyle(.secondary)
+                        }
+                        Text(joinedLine).font(.caption2).foregroundStyle(.secondary)
+                    } else {
+                        // For these 83 the directory holds nothing at all, so
+                        // the header says so and the messages below carry on
+                        // exactly as they do for a member.
+                        Text("This user wrote messages, but was not found in the "
+                             + "member directory (removed?). No user info to show.")
+                            .font(.callout).foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    if !user.subtitle.isEmpty {
-                        Text(user.subtitle).font(.caption).foregroundStyle(.secondary)
-                    }
-                    Text(joinedLine).font(.caption2).foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 2)
             }
@@ -58,12 +68,10 @@ struct UserMessagesView: View {
                         .font(.callout).foregroundStyle(.secondary)
                 }
                 ForEach(pager.items) { msg in
-                    NavigationLink {
-                        MessageListView(
-                            topic: TopicSummary(family: msg.family, name: msg.topic,
-                                                messages: 0, firstYear: nil, lastYear: nil),
-                            anchor: MessageAnchor(topicID: msg.topicID, seq: msg.seq))
-                    } label: {
+                    NavigationLink(value: ThreadTarget(
+                        topic: TopicSummary(family: msg.family, name: msg.topic,
+                                            messages: 0, firstYear: nil, lastYear: nil),
+                        anchor: MessageAnchor(topicID: msg.topicID, seq: msg.seq))) {
                         VStack(alignment: .leading, spacing: 3) {
                             HStack {
                                 Text(msg.location).font(.caption2).foregroundStyle(.tint)

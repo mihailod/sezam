@@ -2,6 +2,7 @@ import SwiftUI
 
 struct UsersView: View {
     @State private var all: [UserItem] = []
+    @State private var router = NavRouter()
     @State private var sort: UserSort = .username
     @State private var loaded = false
 
@@ -15,14 +16,21 @@ struct UsersView: View {
     @State private var companyFacets: [Facet] = []
     @State private var yearFacets: [Facet] = []
     @State private var regionFacets: [Facet] = []
+    /// Authors with no directory entry, shown in their own last section.
+    @State private var unlisted: [UserItem] = []
 
     /// Everything the filter admits. Computed once per filter change and reused
     /// by the sections, the subtitle and the sheet's live match count.
     @State private var visible: [UserItem] = []
 
     private func rebuildSections() {
-        let present = visible.filter { !sort.isMissing($0) }
-        let missing = visible.filter { sort.isMissing($0) }
+        // Sorting by message count is the one ordering where the unlisted
+        // authors have the value being sorted on, so there they mix into the
+        // magnitude buckets instead of sitting apart at the end.
+        let mixesIn = filter.isEmpty && sort.indexesByMagnitude
+        let rows = mixesIn ? visible + unlisted : visible
+        let present = rows.filter { !sort.isMissing($0) }
+        let missing = rows.filter { sort.isMissing($0) }
 
         // Decorate once. sortKey folds per character through ICU, so calling it
         // from inside the comparator would repeat that work O(n log n) times.
@@ -60,6 +68,13 @@ struct UsersView: View {
                 .map(\.1)
             result.append(UserSection(id: "—", title: "—", users: ordered))
         }
+        // People who posted but never appeared in the directory. Last, and only
+        // with no filter on: they have no city, company or join year, so every
+        // filter would exclude them anyway, and counting them would inflate the
+        // Not Specified figure in each filter list.
+        if filter.isEmpty, !unlisted.isEmpty, !mixesIn {
+            result.append(UserSection(id: "N/A", title: "N/A", users: unlisted))
+        }
         sections = result
     }
 
@@ -82,7 +97,14 @@ struct UsersView: View {
         // "3,818 posted messages" would read as a message count; it is the
         // number of users who ever wrote one.
         let base = "\(n) users · \(p) wrote messages"
-        guard !filter.isEmpty else { subtitle = base; return }
+        guard !filter.isEmpty else {
+            // The N/A rows are not directory members, so they are counted
+            // apart rather than folded into the users figure.
+            subtitle = unlisted.isEmpty
+                ? base
+                : base + " · \(unlisted.count) not in directory"
+            return
+        }
         let total = Self.decimal.string(from: NSNumber(value: all.count)) ?? "\(all.count)"
         subtitle = "\(base) · filtered from \(total)"
     }
@@ -95,7 +117,7 @@ struct UsersView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             ScrollViewReader { proxy in
                 List {
                     if !subtitle.isEmpty {
@@ -129,7 +151,7 @@ struct UsersView: View {
                 }
             }
             .navigationTitle("Sezam Users")
-            .navigationDestination(for: UserItem.self) { UserMessagesView(user: $0) }
+            .archiveDestinations(router)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showFilter = true } label: {
@@ -192,6 +214,11 @@ struct UsersView: View {
             .task {
                 guard !loaded else { return }
                 all = (try? UsersRepository.allUsers()) ?? []
+                // 83 rows, so loading them with the directory costs nothing.
+                unlisted = ((try? UsersRepository.unlistedAuthors()) ?? [])
+                    .map { (SerbianLatin.key($0.username), $0) }
+                    .sorted { $0.0 < $1.0 }
+                    .map(\.1)
                 rebuildAll()
                 loaded = true
                 // The filter lists are only needed once the sheet opens, so they

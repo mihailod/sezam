@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BrowseView: View {
     @State private var families: [ConferenceFamily] = []
+    @State private var router = NavRouter()
     @State private var error: String?
 
     private let num: NumberFormatter = {
@@ -9,7 +10,7 @@ struct BrowseView: View {
     }()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             List {
                 if !subtitle.isEmpty {
                     Text(subtitle)
@@ -45,7 +46,7 @@ struct BrowseView: View {
                     }
                 }
             }
-            .navigationDestination(for: ConferenceFamily.self) { TopicListView(family: $0) }
+            .archiveDestinations(router)
             .overlay {
                 if let error {
                     ContentUnavailableView("Could not read the archive",

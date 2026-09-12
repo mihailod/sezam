@@ -11,7 +11,7 @@ struct TopicListView: View {
     var body: some View {
         List {
             ForEach(topics) { topic in
-                NavigationLink(value: topic) {
+                NavigationLink(value: ThreadTarget(topic: topic)) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(topic.name).font(.body)
                         Text("\(count(topic.messages)) messages · \(topic.yearSpan)")
@@ -23,7 +23,6 @@ struct TopicListView: View {
         }
         .navigationTitle(family.family)
         .navigationBarTitleDisplayMode(.large)
-        .navigationDestination(for: TopicSummary.self) { MessageListView(topic: $0) }
         .overlay { if topics.isEmpty { ProgressView() } }
         .task {
             topics = (try? BrowseRepository.topics(in: family.family)) ?? []

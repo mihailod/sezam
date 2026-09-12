@@ -10,6 +10,10 @@ struct UserItem: Identifiable, Hashable {
     let lastSeenISO: String?
     let messageCount: Int
     let authorID: Int64?
+    /// False for the 83 people who posted but never appeared in the member
+    /// directory. They carry a name and a message count and nothing else, so
+    /// they sit in their own section and open a page that says as much.
+    var isListed: Bool = true
 
     /// 7,918 of 7,975 names are exactly two tokens; the rest carry a middle
     /// name or initial ("Aleksandar P. Ranđić"), so last = final token holds.

@@ -71,9 +71,10 @@ final class SearchController {
 
 struct SearchView: View {
     @State private var controller = SearchController()
+    @State private var router = NavRouter()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             Group {
                 if controller.query.trimmingCharacters(in: .whitespaces).isEmpty {
                     SearchHelpView()
@@ -88,7 +89,7 @@ struct SearchView: View {
                 }
             }
             .navigationTitle("Search Sezam")
-            .navigationDestination(for: UserItem.self) { UserMessagesView(user: $0) }
+            .archiveDestinations(router)
             .searchable(text: $controller.query, prompt: "Search messages and people")
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
@@ -131,12 +132,10 @@ struct SearchView: View {
             }
             Section(Self.hits("Messages", controller.messagesTotal)) {
                 ForEach(controller.messages) { hit in
-                    NavigationLink {
-                        MessageListView(
-                            topic: TopicSummary(family: hit.family, name: hit.topic,
-                                                messages: 0, firstYear: nil, lastYear: nil),
-                            anchor: MessageAnchor(topicID: hit.topicID, seq: hit.seq))
-                    } label: {
+                    NavigationLink(value: ThreadTarget(
+                        topic: TopicSummary(family: hit.family, name: hit.topic,
+                                            messages: 0, firstYear: nil, lastYear: nil),
+                        anchor: MessageAnchor(topicID: hit.topicID, seq: hit.seq))) {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Text(hit.author).font(.caption.weight(.semibold))

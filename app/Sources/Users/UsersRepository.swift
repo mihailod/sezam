@@ -28,6 +28,74 @@ enum UsersRepository {
         }
     }
 
+    /// People who posted but never appeared in the member directory: 83 of the
+    /// 3,901 authors, presumably removed before the archive was taken. They
+    /// have a username and a message count, and nothing else.
+    static func unlistedAuthors() throws -> [UserItem] {
+        guard let pool else { return [] }
+        return try pool.read { db in
+            try Row.fetchAll(db, sql: """
+                SELECT a.id AS author_id, a.username AS username,
+                       COALESCE(a.msg_count, 0) AS msgs
+                FROM author a
+                WHERE a.user_id IS NULL AND COALESCE(a.msg_count, 0) > 0
+                """).map { row in
+                let authorID: Int64 = row["author_id"]
+                // Negated: this is an author id, not a user id, and the two
+                // must not collide in a list that holds both kinds of row.
+                return UserItem(id: -authorID, username: row["username"],
+                                fullName: nil, city: nil, company: nil,
+                                joinedISO: nil, lastSeenISO: nil,
+                                messageCount: row["msgs"] ?? 0, authorID: authorID,
+                                isListed: false)
+            }
+        }
+    }
+
+    /// One author with no directory entry, by name, so tapping a name in a
+    /// thread still opens their messages.
+    static func unlistedAuthor(username: String) throws -> UserItem? {
+        guard let pool else { return nil }
+        return try pool.read { db in
+            try Row.fetchOne(db, sql: """
+                SELECT a.id AS author_id, a.username AS username,
+                       COALESCE(a.msg_count, 0) AS msgs
+                FROM author a
+                WHERE a.username = ? AND a.user_id IS NULL
+                """, arguments: [username]).map { row in
+                let authorID: Int64 = row["author_id"]
+                return UserItem(id: -authorID, username: row["username"],
+                                fullName: nil, city: nil, company: nil,
+                                joinedISO: nil, lastSeenISO: nil,
+                                messageCount: row["msgs"] ?? 0, authorID: authorID,
+                                isListed: false)
+            }
+        }
+    }
+
+    /// One member by username, for tapping an author's name in a thread. Built
+    /// from the same columns as `allUsers`, so the profile that opens is the
+    /// one the directory and search would have shown.
+    static func user(username: String) throws -> UserItem? {
+        guard let pool else { return nil }
+        return try pool.read { db in
+            try Row.fetchOne(db, sql: """
+                SELECT u.id AS id, u.username AS username, u.full_name AS full_name,
+                       u.city AS city, u.company AS company,
+                       u.member_since_iso AS joined, u.last_seen_iso AS last_seen,
+                       a.id AS author_id, COALESCE(a.msg_count, 0) AS msgs
+                FROM user u
+                LEFT JOIN author a ON a.user_id = u.id
+                WHERE u.username = ?
+                """, arguments: [username]).map {
+                UserItem(id: $0["id"], username: $0["username"], fullName: $0["full_name"],
+                         city: $0["city"], company: $0["company"],
+                         joinedISO: $0["joined"], lastSeenISO: $0["last_seen"],
+                         messageCount: $0["msgs"] ?? 0, authorID: $0["author_id"])
+            }
+        }
+    }
+
     /// Keyset page of one author's messages, ordered by message id as asked.
     /// Served by ix_msg_author_id -- without that index this scans the whole
     /// table by rowid (629 ms); with it, 0.11 ms.

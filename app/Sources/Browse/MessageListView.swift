@@ -130,12 +130,35 @@ struct MessageAnchor: Hashable {
     let seq: Int
 }
 
+/// A tapped author name. Its own type rather than `UserItem`: a message row
+/// knows only the username, so the profile has to be looked up on arrival.
+struct AuthorLink: Hashable {
+    let username: String
+}
+
+/// A thread to open, optionally at one message. Pushed by value like every
+/// other screen, so the stack has exactly one declaration for it.
+struct ThreadTarget: Hashable {
+    let topic: TopicSummary
+    var anchor: MessageAnchor?
+}
+
 struct MessageListView: View {
     let topic: TopicSummary
+    /// The stack's path, so tapping a name can push while the name stays a
+    /// plain button and the rest of the message stays inert.
+    ///
+    /// Handed over at construction rather than read from the environment: a
+    /// pushed view inherits the environment of the *stack*, not of the view
+    /// that declared the destination, so an `@Environment` lookup here found
+    /// nothing and trapped as soon as a thread opened. As an argument, the
+    /// compiler will not let that happen.
+    let router: NavRouter
     @State private var pager: MessagePager
 
-    init(topic: TopicSummary, anchor: MessageAnchor? = nil) {
+    init(topic: TopicSummary, anchor: MessageAnchor? = nil, router: NavRouter) {
         self.topic = topic
+        self.router = router
         _pager = State(initialValue: MessagePager(topic: topic, anchor: anchor))
     }
 
@@ -153,7 +176,8 @@ struct MessageListView: View {
                 ForEach(pager.items) { msg in
                     MessageCell(message: msg,
                                 parentID: pager.parentID(of: msg),
-                                onJump: { target in jump(to: target, using: proxy) })
+                                onJump: { target in jump(to: target, using: proxy) },
+                                onAuthor: { router.path.append(AuthorLink(username: $0)) })
                         .id(msg.id)
                         .listRowBackground(highlighted == msg.id
                                            ? Color.accentColor.opacity(0.15) : Color.clear)
@@ -197,16 +221,69 @@ struct MessageListView: View {
     }
 }
 
+/// The profile behind an author's name. Most names resolve; 83 of the 3,901
+/// people who ever posted never appeared in the member directory, and for those
+/// this says so rather than opening a profile with nothing in it.
+struct AuthorProfileView: View {
+    let username: String
+    @State private var user: UserItem?
+    @State private var searched = false
+
+    var body: some View {
+        Group {
+            if let user {
+                UserMessagesView(user: user)
+            } else if searched {
+                NoProfileView(username: username)
+            } else {
+                ProgressView()
+            }
+        }
+        .task {
+            guard !searched else { return }
+            // A member first; failing that an author with no directory entry,
+            // whose messages are still worth opening.
+            user = (try? UsersRepository.user(username: username))
+                ?? (try? UsersRepository.unlistedAuthor(username: username))
+            searched = true
+        }
+    }
+}
+
+/// Shown for a name with no directory entry, whether it was tapped in a thread
+/// or in the N/A section of the directory.
+struct NoProfileView: View {
+    let username: String
+
+    var body: some View {
+        ContentUnavailableView {
+            Label(username, systemImage: "person.crop.circle.badge.questionmark")
+        } description: {
+            Text("This user wrote messages, but was not found in the member "
+                 + "directory (removed?). No user info to show.")
+        }
+    }
+}
+
 private struct MessageCell: View {
     @State private var settings = AppSettings.shared
     let message: MessageRow
     var parentID: Int64?
     var onJump: (Int64) -> Void = { _ in }
+    var onAuthor: (String) -> Void = { _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
-                Text(message.author).font(.caption.weight(.semibold))
+                // A Button rather than a NavigationLink: a link inside a list
+                // row makes the entire row activate it, so a tap anywhere in
+                // the message opened the author's page. Only the name is
+                // tappable now, and the body is inert again.
+                Button { onAuthor(message.author) } label: {
+                    Text(message.author).font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.tint)
                 Text("#\(message.seq)").font(.caption2).foregroundStyle(.tertiary)
                 Spacer()
                 Text(message.displayDate).font(.caption2).foregroundStyle(.secondary)
