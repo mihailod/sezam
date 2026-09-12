@@ -25,7 +25,16 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
+        # iPhone stays portrait-only. An iPad is big enough to read a
+        # thread sideways, and a rotation lock on one is the mark of a
+        # phone app running on a tablet -- the ~ipad key overrides the
+        # line above on that idiom only.
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         # Where the app looks for the archive manifest. Swap this one string for
         # the archive.org URL -- no code changes.
         # Tried in order; first valid JSON wins. GitHub Pages is listed first
@@ -45,7 +54,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: net.oldsezam.reader
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
-        TARGETED_DEVICE_FAMILY: "1"          # iPhone only
+        TARGETED_DEVICE_FAMILY: "1,2"        # iPhone and iPad
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_VERSION: "5.0"

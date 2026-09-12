@@ -37,6 +37,12 @@ struct DownloadView: View {
             }
             Spacer()
         }
+        // The one screen in the app that is a centred column rather than a
+        // list, so it is the one screen that has to be told how wide to be:
+        // stretched across an iPad it would be a lone button a metre wide.
+        // No effect on iPhone, which is never wider than this.
+        .frame(maxWidth: Device.isPad ? Device.readableColumnWidth : .infinity)
+        .frame(maxWidth: .infinity)
         .task {
             if bootstrap.autoStartInstall {
                 bootstrap.autoStartInstall = false

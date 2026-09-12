@@ -4,7 +4,12 @@ enum AppInfo {
     static let displayName = "Sezam YU"
     static let author = "Mihailo Despotovic"
 
-    static var appCopyright: String { "iPhone App: © 2026 \(author)" }
+    /// Named for the device it is running on: the same binary is the
+    /// iPhone app and the iPad app, and calling itself the iPhone app on
+    /// an iPad is the tell of a phone build someone has sideloaded.
+    static var appCopyright: String {
+        "\(Device.isPad ? "iPad" : "iPhone") App: © 2026 \(author)"
+    }
     static let databaseCredit = "Archive: public domain (oldsezam.net)"
 
     /// The heading the archive notice is published under.

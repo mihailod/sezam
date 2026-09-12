@@ -79,9 +79,10 @@ users_cache/
 nohup.out
 *.pid
 
-# ─── Device deploy (scripts/iPhone.sh) ────────────────────────────────────────
+# ─── Device deploy (scripts/iPhone.sh, scripts/iPad.sh) ───────────────────────
 # Names a specific piece of hardware / your signing team: belongs to this
 # machine, not the repository.
 .device-iphone
+.device-ipad
 .team
 .xcbuild-device/
