@@ -18,10 +18,11 @@ enum BrowseRepository {
                 SELECT c.family                       AS family,
                        sum(t.msg_count)               AS messages,
                        count(DISTINCT t.name)         AS topics,
-                       -- "1995-02": ISO strings compare in date order, so
-                       -- min/max on the text need no conversion.
-                       min(substr(t.first_ts,1,7))    AS m0,
-                       max(substr(t.last_ts,1,7))     AS m1
+                       -- ISO strings compare in date order, so min/max on the
+                       -- text need no conversion. Kept whole rather than cut to
+                       -- the month: the row shows months, the sort needs days.
+                       min(t.first_ts)                AS m0,
+                       max(t.last_ts)                 AS m1
                 FROM conference c JOIN topic t ON t.conf_id = c.id
                 WHERE t.msg_count > 0
                 GROUP BY c.family
@@ -29,7 +30,7 @@ enum BrowseRepository {
                 """).map {
                 ConferenceFamily(family: $0["family"], messages: $0["messages"] ?? 0,
                                  topics: $0["topics"] ?? 0,
-                                 firstMonth: $0["m0"], lastMonth: $0["m1"])
+                                 firstPost: $0["m0"], lastPost: $0["m1"])
             }
         }
     }
@@ -42,15 +43,15 @@ enum BrowseRepository {
             try Row.fetchAll(db, sql: """
                 SELECT t.name                          AS name,
                        sum(t.msg_count)                AS messages,
-                       min(substr(t.first_ts,1,7))     AS m0,
-                       max(substr(t.last_ts,1,7))      AS m1
+                       min(t.first_ts)                 AS m0,
+                       max(t.last_ts)                  AS m1
                 FROM conference c JOIN topic t ON t.conf_id = c.id
                 WHERE c.family = ? AND t.msg_count > 0
                 GROUP BY t.name
                 ORDER BY messages DESC, name
                 """, arguments: [family]).map {
                 TopicSummary(family: family, name: $0["name"], messages: $0["messages"] ?? 0,
-                             firstMonth: $0["m0"], lastMonth: $0["m1"])
+                             firstPost: $0["m0"], lastPost: $0["m1"])
             }
             // Re-sorted in Swift for the name tie-break only: SQLite's BINARY
             // collation files 23 topics (računari, štampači, trač...) after z.

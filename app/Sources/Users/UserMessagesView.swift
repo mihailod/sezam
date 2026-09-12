@@ -99,7 +99,7 @@ struct UserMessagesView: View {
                 ForEach(pager.items) { msg in
                     NavigationLink(value: ThreadTarget(
                         topic: TopicSummary(family: msg.family, name: msg.topic,
-                                            messages: 0, firstMonth: nil, lastMonth: nil),
+                                            messages: 0, firstPost: nil, lastPost: nil),
                         anchor: MessageAnchor(topicID: msg.topicID, seq: msg.seq))) {
                         VStack(alignment: .leading, spacing: 3) {
                             HStack {

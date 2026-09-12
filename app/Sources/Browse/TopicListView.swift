@@ -3,6 +3,11 @@ import SwiftUI
 struct TopicListView: View {
     let family: ConferenceFamily
     @State private var topics: [TopicSummary] = []
+    @Bindable private var sort = BrowseSortSelection.shared
+
+    /// Sorted here rather than in the query: 463 topics at most, and the
+    /// re-sort has to happen on every menu tap anyway.
+    private var sorted: [TopicSummary] { sort.value.apply(topics) }
 
     private let num: NumberFormatter = {
         let f = NumberFormatter(); f.numberStyle = .decimal; return f
@@ -10,7 +15,7 @@ struct TopicListView: View {
 
     var body: some View {
         List {
-            ForEach(topics) { topic in
+            ForEach(sorted) { topic in
                 NavigationLink(value: ThreadTarget(topic: topic)) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(topic.name).font(.body)
@@ -23,6 +28,11 @@ struct TopicListView: View {
         }
         .navigationTitle(family.family)
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ArchiveSortMenu(sort: $sort.value)
+            }
+        }
         .overlay { if topics.isEmpty { ProgressView() } }
         .task {
             topics = (try? BrowseRepository.topics(in: family.family)) ?? []

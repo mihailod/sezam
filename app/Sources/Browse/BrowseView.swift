@@ -4,6 +4,10 @@ struct BrowseView: View {
     @State private var families: [ConferenceFamily] = []
     @State private var router = NavRouter()
     @State private var error: String?
+    @Bindable private var sort = BrowseSortSelection.shared
+
+    /// 27 rows: cheap enough to re-sort on every render, unlike the Users list.
+    private var sorted: [ConferenceFamily] { sort.value.apply(families) }
 
     private let num: NumberFormatter = {
         let f = NumberFormatter(); f.numberStyle = .decimal; return f
@@ -18,7 +22,7 @@ struct BrowseView: View {
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
                 }
-                ForEach(families) { fam in
+                ForEach(sorted) { fam in
                     NavigationLink(value: fam) {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(fam.family).font(.headline)
@@ -31,24 +35,8 @@ struct BrowseView: View {
             }
             .navigationTitle(title)
             .toolbar {
-                // The large title with the span a size down. A navigation title
-                // is a plain string and cannot mix sizes; iOS 26 lets a view
-                // stand in for the large title, while the string above still
-                // supplies the collapsed title and the back button. Earlier
-                // systems show that string at full size.
-                if #available(iOS 26, *) {
-                    ToolbarItem(placement: .largeTitle) {
-                        HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            Text("Sezam").font(.largeTitle.bold())
-                            if let span { Text(span).font(.title2.bold()) }
-                        }
-                        // "Sezam Oct 1989 – Dec 1999" is close to the width of
-                        // a phone, and at larger text sizes past it: shrink to
-                        // fit rather than truncate the span to an ellipsis.
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                ToolbarItem(placement: .topBarTrailing) {
+                    ArchiveSortMenu(sort: $sort.value)
                 }
             }
             .archiveDestinations(router)
@@ -70,26 +58,23 @@ struct BrowseView: View {
 
     private func count(_ n: Int) -> String { num.string(from: NSNumber(value: n)) ?? "\(n)" }
 
-    /// The string title. On iOS 26 the large title is the view below, which
-    /// carries the span, and this string is only what the bar collapses to and
-    /// what the back button says -- "Sezam Oct 1989 – Dec 1999" would be
-    /// truncated in both places, so there it stays the bare name. Older
-    /// systems have only this string, so there it carries the span.
-    private var title: String {
-        if #available(iOS 26, *) { return "Sezam" }
-        return span.map { "Sezam \($0)" } ?? "Sezam"
-    }
+    /// "Sezam 1989–1999", as one plain string so it renders at the same size
+    /// as "Sezam Users" and "Search Sezam". A navigation title cannot mix two
+    /// sizes, and the iOS 26 view that could was what made the span smaller;
+    /// years are short enough not to need it. The rows below still carry the
+    /// month-precision spans.
+    private var title: String { span.map { "Sezam \($0)" } ?? "Sezam" }
 
-    /// "Oct 1989 – Dec 1999": what the whole archive covers, taken from the
-    /// rows rather than hard-coded. Nil until the rows are in.
+    /// "1989–1999": what the whole archive covers, taken from the rows rather
+    /// than hard-coded. Nil until the rows are in, so it never flashes a
+    /// half-title.
     ///
-    /// min/max over the stored "1989-10" form, which sorts in date order, so
-    /// the earliest month wins rather than the earliest month number.
+    /// min/max over the stored ISO timestamps, which sort in date order, so
+    /// the year comes off the genuinely earliest and latest message.
     private var span: String? {
-        let first = families.compactMap(\.firstMonth).min()
-        let last = families.compactMap(\.lastMonth).max()
-        guard first != nil, last != nil else { return nil }
-        return ArchiveDate.monthSpan(first, last)
+        guard let first = families.compactMap(\.firstPost).min()?.prefix(4),
+              let last = families.compactMap(\.lastPost).max()?.prefix(4) else { return nil }
+        return first == last ? "\(first)" : "\(first)–\(last)"
     }
 
     /// Rendered as a caption row rather than `navigationSubtitle`, which is

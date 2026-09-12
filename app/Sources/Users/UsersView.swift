@@ -18,6 +18,28 @@ struct UsersView: View {
     @State private var regionFacets: [Facet] = []
     /// Authors with no directory entry, shown in their own last section.
     @State private var unlisted: [UserItem] = []
+    /// Those of them the search box still admits.
+    @State private var unlistedVisible: [UserItem] = []
+
+    @State private var query = ""
+    /// The query folded and split, so a row is tested against ready tokens
+    /// rather than re-folding the query 8,105 times per keystroke.
+    @State private var queryTokens: [String] = []
+
+    /// Per user, everything searchable folded into one string, built once when
+    /// the directory loads. Folding is ICU work: doing it per row per keystroke
+    /// is what makes an in-memory search feel slow.
+    @State private var haystack: [Int64: String] = [:]
+    /// Usernames pre-folded for the sort, for the same reason.
+    @State private var nameKeys: [Int64: String] = [:]
+
+    /// Every token has to appear somewhere in the row, so "marko beograd"
+    /// narrows rather than widens.
+    private func matchesQuery(_ u: UserItem) -> Bool {
+        guard !queryTokens.isEmpty else { return true }
+        guard let hay = haystack[u.id] else { return false }
+        return queryTokens.allSatisfy(hay.contains)
+    }
 
     /// Everything the filter admits. Computed once per filter change and reused
     /// by the sections, the subtitle and the sheet's live match count.
@@ -28,7 +50,7 @@ struct UsersView: View {
         // authors have the value being sorted on, so there they mix into the
         // magnitude buckets instead of sitting apart at the end.
         let mixesIn = filter.isEmpty && sort.indexesByMagnitude
-        let rows = mixesIn ? visible + unlisted : visible
+        let rows = mixesIn ? visible + unlistedVisible : visible
         let present = rows.filter { !sort.isMissing($0) }
         let missing = rows.filter { sort.isMissing($0) }
 
@@ -45,7 +67,7 @@ struct UsersView: View {
         for u in present {
             groups[sort.bucket(u), default: []].append(
                 Keyed(bucket: sort.bucket(u), key: sort.sortKey(u),
-                      name: SerbianLatin.key(u.username), user: u))
+                      name: nameKeys[u.id] ?? SerbianLatin.key(u.username), user: u))
         }
 
         // Ordered by the sort's own bucket ranking, not alphabetically:
@@ -63,7 +85,7 @@ struct UsersView: View {
             // Keys computed once, for the reason given above. Sorting by
             // Company leaves 6,488 users here; folding inside the comparator
             // was 194 ms of a 245 ms re-sort in a Debug build.
-            let ordered = missing.map { (SerbianLatin.key($0.username), $0) }
+            let ordered = missing.map { (nameKeys[$0.id] ?? SerbianLatin.key($0.username), $0) }
                 .sorted { $0.0 < $1.0 }
                 .map(\.1)
             result.append(UserSection(id: "—", title: "—", users: ordered))
@@ -72,8 +94,8 @@ struct UsersView: View {
         // with no filter on: they have no city, company or join year, so every
         // filter would exclude them anyway, and counting them would inflate the
         // Not Specified figure in each filter list.
-        if filter.isEmpty, !unlisted.isEmpty, !mixesIn {
-            result.append(UserSection(id: "N/A", title: "N/A", users: unlisted))
+        if filter.isEmpty, !unlistedVisible.isEmpty, !mixesIn {
+            result.append(UserSection(id: "N/A", title: "N/A", users: unlistedVisible))
         }
         sections = result
     }
@@ -97,21 +119,38 @@ struct UsersView: View {
         // "3,818 posted messages" would read as a message count; it is the
         // number of users who ever wrote one.
         let base = "\(n) users · \(p) wrote messages"
-        guard !filter.isEmpty else {
+        guard !filter.isEmpty || !queryTokens.isEmpty else {
             // The N/A rows are not directory members, so they are counted
             // apart rather than folded into the users figure.
-            subtitle = unlisted.isEmpty
+            subtitle = unlistedVisible.isEmpty
                 ? base
-                : base + " · \(unlisted.count) not in directory"
+                : base + " · \(unlistedVisible.count) not in directory"
             return
         }
         let total = Self.decimal.string(from: NSNumber(value: all.count)) ?? "\(all.count)"
         subtitle = "\(base) · filtered from \(total)"
     }
 
-    /// Re-applies the filter and everything derived from it.
+    /// Re-applies the filter and the search box, and everything derived from
+    /// them. The search narrows the same list the filter does; the two stack.
     private func rebuildAll() {
-        visible = filter.isEmpty ? all : all.filter(filter.matches)
+        queryTokens = SerbianLatin.fold(query)
+            .split(whereSeparator: \.isWhitespace)
+            .map(String.init)
+
+        if filter.isEmpty && queryTokens.isEmpty {
+            visible = all
+        } else if queryTokens.isEmpty {
+            visible = all.filter(filter.matches)
+        } else if filter.isEmpty {
+            visible = all.filter(matchesQuery)
+        } else {
+            visible = all.filter { filter.matches($0) && matchesQuery($0) }
+        }
+        // The 83 have no city, company or join year, so every filter excludes
+        // them -- but they do have a username, which the search can match.
+        unlistedVisible = queryTokens.isEmpty ? unlisted : unlisted.filter(matchesQuery)
+
         rebuildSubtitle()
         rebuildSections()
     }
@@ -152,6 +191,15 @@ struct UsersView: View {
             }
             .navigationTitle("Sezam Users")
             .archiveDestinations(router)
+            // Same placement rule as the Search tab: the phone's default is
+            // already a full-width field under the title, an iPad's is a
+            // cramped one in the toolbar.
+            .searchable(text: $query,
+                        placement: Device.isPad
+                            ? .navigationBarDrawer(displayMode: .always) : .automatic,
+                        prompt: "Search name, city or company")
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showFilter = true } label: {
@@ -193,13 +241,23 @@ struct UsersView: View {
             .overlay {
                 if !loaded {
                     ProgressView()
-                } else if visible.isEmpty {
-                    ContentUnavailableView {
-                        Label("No matching users", systemImage: "line.3.horizontal.decrease.circle")
-                    } description: {
-                        Text("No one in the archive matches every filter.")
-                    } actions: {
-                        Button("Clear Filters") { filter = UserFilter() }
+                } else if visible.isEmpty && unlistedVisible.isEmpty {
+                    // With a search running, the standard "no results for …"
+                    // is the right message: offering "Clear Filters" for a
+                    // typo in the search box would clear the wrong thing.
+                    if !queryTokens.isEmpty, filter.isEmpty {
+                        ContentUnavailableView.search(text: query)
+                    } else {
+                        ContentUnavailableView {
+                            Label("No matching users",
+                                  systemImage: "line.3.horizontal.decrease.circle")
+                        } description: {
+                            Text(queryTokens.isEmpty
+                                 ? "No one in the archive matches every filter."
+                                 : "No one matches both the filter and the search.")
+                        } actions: {
+                            Button("Clear Filters") { filter = UserFilter() }
+                        }
                     }
                 }
             }
@@ -213,12 +271,32 @@ struct UsersView: View {
             }
             .task {
                 guard !loaded else { return }
-                all = (try? UsersRepository.allUsers()) ?? []
-                // 83 rows, so loading them with the directory costs nothing.
-                unlisted = ((try? UsersRepository.unlistedAuthors()) ?? [])
-                    .map { (SerbianLatin.key($0.username), $0) }
-                    .sorted { $0.0 < $1.0 }
-                    .map(\.1)
+                // Reading 8,105 rows and folding them is not main-thread work:
+                // done inline it held the tab on the previous screen until it
+                // finished, which is what made the first tap feel slow.
+                let loadedData = await Task.detached(priority: .userInitiated) {
+                    let people = (try? UsersRepository.allUsers()) ?? []
+                    // 83 rows, so loading them with the directory costs nothing.
+                    let absent = ((try? UsersRepository.unlistedAuthors()) ?? [])
+                        .map { (SerbianLatin.key($0.username), $0) }
+                        .sorted { $0.0 < $1.0 }
+                        .map(\.1)
+                    // One fold per person rather than one per keystroke. Both
+                    // the directory and the 83 unlisted authors go in, so a
+                    // search can reach either.
+                    var hay: [Int64: String] = [:]
+                    var keys: [Int64: String] = [:]
+                    hay.reserveCapacity(people.count + absent.count)
+                    keys.reserveCapacity(people.count + absent.count)
+                    for u in people + absent {
+                        hay[u.id] = SerbianLatin.fold(
+                            [u.username, u.fullName ?? "", u.city ?? "", u.company ?? ""]
+                                .joined(separator: " "))
+                        keys[u.id] = SerbianLatin.key(u.username)
+                    }
+                    return (people, absent, hay, keys)
+                }.value
+                (all, unlisted, haystack, nameKeys) = loadedData
                 rebuildAll()
                 loaded = true
                 // The filter lists are only needed once the sheet opens, so they
@@ -239,6 +317,7 @@ struct UsersView: View {
             }
             .onChange(of: sort) { _, _ in rebuildSections() }
             .onChange(of: filter) { _, _ in rebuildAll() }
+            .onChange(of: query) { _, _ in if loaded { rebuildAll() } }
         }
     }
 }

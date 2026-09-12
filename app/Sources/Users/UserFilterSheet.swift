@@ -53,7 +53,7 @@ struct UserFilterSheet: View {
                 facetSection("Region · Country", .region, regionFacets,
                              search: $regionSearch, expanded: $regionExpanded)
             }
-            .navigationTitle("Filter on:")
+            .navigationTitle("Filter on")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
