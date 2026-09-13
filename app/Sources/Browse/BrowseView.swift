@@ -36,7 +36,7 @@ struct BrowseView: View {
             .navigationTitle(title)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    ArchiveSortMenu(sort: $sort.value)
+                    SortMenu(selection: $sort.value)
                 }
             }
             .archiveDestinations(router)

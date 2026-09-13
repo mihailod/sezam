@@ -18,9 +18,26 @@ final class SearchController {
     private let pageSize = 40
     private var isLoadingMore = false
 
+    /// Kept across searches for the life of the tab: someone reading oldest
+    /// first is still reading oldest first after refining the words.
+    private(set) var sort: MessageSearchSort = .relevance
+
     /// Bumped by every search. Queries run off the main actor, so an older one
     /// can finish after a newer one; only the newest may publish results.
     private var generation = 0
+
+    /// Re-runs the whole search rather than refetching only the messages.
+    ///
+    /// Refetching alone would race a keystroke: if a new query were still in
+    /// flight, a messages-only reload would publish results for the *old*
+    /// words and then discard the new search as superseded. Going through
+    /// `run` lets the one generation counter sort that out. The people and
+    /// counts it also re-reads come back identical, so nothing visible moves.
+    func setSort(_ new: MessageSearchSort) async {
+        guard new != sort else { return }
+        sort = new
+        await run(query)
+    }
 
     /// The query runs off the main actor. A common prefix ranks hundreds of
     /// thousands of rows -- "beog*" matches 435k messages, ~260 ms on a Mac
@@ -36,10 +53,11 @@ final class SearchController {
             return
         }
         isSearching = true
-        let limit = pageSize
+        let limit = pageSize, order = sort
         let (foundPeople, foundMessages, totals) = await Task.detached(priority: .userInitiated) {
             ((try? SearchRepository.people(matching: expr, limit: 8)) ?? [],
-             (try? SearchRepository.messages(matching: expr, limit: limit, offset: 0)) ?? [],
+             (try? SearchRepository.messages(matching: expr, sort: order,
+                                             limit: limit, offset: 0)) ?? [],
              SearchRepository.hitCounts(matching: expr))
         }.value
         guard gen == generation else { return }     // superseded by a newer keystroke
@@ -56,10 +74,11 @@ final class SearchController {
     func loadMore() {
         guard let expr = expression, !reachedEnd, !isLoadingMore else { return }
         isLoadingMore = true
-        let gen = generation, offset = messages.count, limit = pageSize
+        let gen = generation, offset = messages.count, limit = pageSize, order = sort
         Task {
             let next = await Task.detached(priority: .userInitiated) {
-                (try? SearchRepository.messages(matching: expr, limit: limit, offset: offset)) ?? []
+                (try? SearchRepository.messages(matching: expr, sort: order,
+                                                limit: limit, offset: offset)) ?? []
             }.value
             isLoadingMore = false
             guard gen == generation else { return } // a new search replaced this list
@@ -147,7 +166,7 @@ struct SearchView: View {
                     }
                 }
             }
-            Section(Self.hits("Messages", controller.messagesTotal)) {
+            Section {
                 ForEach(controller.messages) { hit in
                     NavigationLink(value: ThreadTarget(
                         topic: TopicSummary(family: hit.family, name: hit.topic,
@@ -156,6 +175,8 @@ struct SearchView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Text(hit.author).font(.caption.weight(.semibold))
+                                Text(hit.repliesLabel)
+                                    .font(.caption2).foregroundStyle(.secondary)
                                 Spacer()
                                 Text(hit.displayDate).font(.caption2).foregroundStyle(.secondary)
                             }
@@ -173,10 +194,27 @@ struct SearchView: View {
                 if !controller.reachedEnd {
                     HStack { Spacer(); ProgressView(); Spacer() }
                 }
+            } header: {
+                // In this section's header rather than the toolbar, because it
+                // orders only these rows. Up in the bar it would read as sorting
+                // the whole screen, People included, which it does not.
+                HStack {
+                    Text(Self.hits("Messages", controller.messagesTotal))
+                    Spacer()
+                    SortMenu(selection: Binding(
+                        get: { controller.sort },
+                        set: { new in Task { await controller.setSort(new) } }))
+                        .textCase(nil)
+                }
             }
         }
+        // A fresh identity per order, so a re-sorted list opens at the top
+        // instead of holding the scroll offset of rows that have all moved.
+        .id(controller.sort)
     }
 }
+
+extension MessageSearchSort: SortOption {}
 
 // MessageDetailView removed: a hit now opens the real thread, which shows
 // the message in its conversation rather than in isolation.

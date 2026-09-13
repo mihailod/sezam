@@ -38,28 +38,57 @@ enum SearchRepository {
         return (people: count("user_search"), messages: count("search"))
     }
 
-    static func messages(matching expression: String, limit: Int, offset: Int) throws -> [MessageHit] {
+    static func messages(matching expression: String, sort: MessageSearchSort = .relevance,
+                         limit: Int, offset: Int) throws -> [MessageHit] {
         guard let pool else { return [] }
         return try pool.read { db in
             try Row.fetchAll(db, sql: """
                 SELECT m.id AS id, m.topic_id AS topic_id, m.seq AS seq,
                        a.username AS author, c.family AS family,
-                       t.name AS topic, c.volume AS volume, m.ts AS ts, m.body AS body
+                       t.name AS topic, c.volume AS volume, m.ts AS ts, m.body AS body,
+                       -- Costs nothing measurable: a subquery in the result
+                       -- columns runs only for the rows LIMIT keeps, so this is
+                       -- 40 index seeks however many messages matched.
+                       (SELECT count(*) FROM message r
+                        WHERE r.topic_id = m.topic_id AND r.reply_seq = m.seq) AS replies
                 FROM search s
                 JOIN message m    ON m.id = s.rowid
                 JOIN author a     ON a.id = m.author_id
                 JOIN topic t      ON t.id = m.topic_id
                 JOIN conference c ON c.id = t.conf_id
                 WHERE search MATCH ?
-                ORDER BY rank
+                ORDER BY \(orderBy(sort))
                 LIMIT ? OFFSET ?
                 """, arguments: [expression, limit, offset]).map {
                 MessageHit(id: $0["id"], topicID: $0["topic_id"] ?? 0,
                            seq: $0["seq"] ?? 0,
                            author: $0["author"], family: $0["family"],
                            topic: $0["topic"], volume: $0["volume"],
-                           timestamp: $0["ts"], body: $0["body"] ?? "")
+                           timestamp: $0["ts"], body: $0["body"] ?? "",
+                           replies: $0["replies"] ?? 0)
             }
+        }
+    }
+
+    /// Every order ends on m.id. Pages are fetched by OFFSET, which is only
+    /// stable over a total order: a cross-posted message ranks identically in
+    /// both conferences, and two posts can share a minute, and either tie
+    /// would otherwise let a row repeat or vanish between one page and the next.
+    private static func orderBy(_ sort: MessageSearchSort) -> String {
+        switch sort {
+        case .relevance:
+            return "rank, m.id"
+        case .mostReplies:
+            // The `replies` result column, so the count is written once. To
+            // sort by it SQLite must count every match, not just the page --
+            // that is what makes this the slowest order, ~340 ms on "beog*".
+            // No cached column instead: that would change the database's size,
+            // which the launch check compares byte for byte with the manifest.
+            return "replies DESC, rank, m.id"
+        case .oldest:
+            return "m.epoch, m.id"
+        case .newest:
+            return "m.epoch DESC, m.id DESC"
         }
     }
 

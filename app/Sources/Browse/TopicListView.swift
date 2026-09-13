@@ -33,7 +33,7 @@ struct TopicListView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                ArchiveSortMenu(sort: $sort.value)
+                SortMenu(selection: $sort.value)
             }
         }
         .overlay { if topics.isEmpty { ProgressView() } }

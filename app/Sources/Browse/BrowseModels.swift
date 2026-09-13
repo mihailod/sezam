@@ -52,7 +52,7 @@ enum ArchiveSort: String, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .firstPost:    return "First Post"
-        case .messages:     return "# of Messages"
+        case .messages:     return "Most Messages"
         case .lastActive:   return "Last Active"
         case .alphabetical: return "Alphabetical"
         }
