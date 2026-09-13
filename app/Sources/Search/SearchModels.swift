@@ -38,7 +38,8 @@ struct MessageHit: Identifiable, Hashable {
 /// by replies -- the default, so the slowest order is the one every search
 /// pays. On an ordinary word ("windows", 22k hits) that is 23 ms.
 enum MessageSearchSort: String, CaseIterable, Identifiable, Hashable {
-    case relevance, mostReplies, oldest, newest
+    // Declaration order is menu order: the default leads.
+    case mostReplies, relevance, oldest, newest
     var id: String { rawValue }
 
     var label: String {

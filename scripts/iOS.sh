@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Build, install and launch Sezam YU on a paired iOS device — the same thing as
+# Build, install and launch Sezam BBS on a paired iOS device — the same thing as
 # hitting Run in Xcode. Everything here is device-agnostic; the per-device
 # wrappers (scripts/iPhone.sh, scripts/iPad.sh) set four variables and source
 # this file:
@@ -35,7 +35,7 @@ APP_DIR="app"
 PROJECT="SezamYU.xcodeproj"
 SCHEME="SezamYU"
 BUNDLE="net.oldsezam.reader"
-APP_NAME="Sezam YU.app"          # PRODUCT_NAME has a space — quote every use
+APP_NAME="Sezam BBS.app"         # PRODUCT_NAME has a space — quote every use
 DERIVED=".xcbuild-device"
 # Release rather than the Debug default: this script is how the app reaches the
 # device for everyday use, and the Users tab's first open measured ~240 ms of

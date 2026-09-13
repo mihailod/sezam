@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Build, install and launch Sezam YU on the paired iPad — the same thing as
+# Build, install and launch Sezam BBS on the paired iPad — the same thing as
 # hitting Run in Xcode.
 #
 #   ./scripts/iPad.sh setup         record the paired iPad in .device-ipad

@@ -1,7 +1,7 @@
 import Foundation
 
 enum AppInfo {
-    static let displayName = "Sezam YU"
+    static let displayName = "Sezam BBS"
     static let author = "Mihailo Despotovic"
 
     /// Named for the device it is running on: the same binary is the
@@ -34,16 +34,21 @@ enum AppInfo {
         Epigraph(quote: "Data isn\u{2019}t information, any more than fifty tons "
                  + "of cement is a skyscraper.",
                  author: "Clifford Stoll"),
+        Epigraph(quote: "There are two ways of constructing a software design: One way "
+                 + "is to make it so simple that there are obviously no deficiencies "
+                 + "and the other way is to make it so complicated that there are no "
+                 + "obvious deficiencies.",
+                 author: "C. A. R. Hoare"),
     ]
 
     /// The card that closes the panel. Three paragraphs, kept exactly as
     /// written -- the lower case and the handles are the register of the board
     /// these people posted on, not a style slip to be tidied up.
     static let credits = [
-        "created by mihailod",
-        "shouts go to d.m. / davor, kcurcic, mrbin, shoom, nradeta, wisil, "
-            + "jujo, baltazar, spantic, ikordic, cupko",
-        "dedicated to dejanr",
+        " ... ... created ... by ... mihailod ... "
+            + " ... shouts to ... d.m. / davor ... kcurcic ... mrbin ... shoom ... nradeta ... wisil ... "
+            + "jujo ... baltazar ... spantic ... ikordic ... and cupko ... "
+            + "... dedicated to ... dejanr [RIP] ... and vantonic ... ...",
     ]
 
     static var version: String {

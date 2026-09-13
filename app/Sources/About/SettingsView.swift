@@ -12,15 +12,22 @@ struct SettingsView: View {
     private var sizeSlider: Binding<Double> {
         Binding(
             get: { Double(settings.overrideIndex ?? AppSettings.index(of: systemSize)) },
-            set: { value in
-                // Landing back on the system's own step means "match system",
-                // so the override is cleared rather than pinned to the same
-                // number — otherwise the app would stop following iOS while
-                // appearing to agree with it.
-                let i = Int(value.rounded())
-                settings.overrideIndex = (i == AppSettings.index(of: systemSize)) ? nil : i
-            }
+            set: { value in setStep(Int(value.rounded())) }
         )
+    }
+
+    /// Landing back on the system's own step means "match system", so the
+    /// override is cleared rather than pinned to the same number —
+    /// otherwise the app would stop following iOS while appearing to agree
+    /// with it. Shared by the slider and the two tap-to-nudge "A"s.
+    private func setStep(_ i: Int) {
+        settings.overrideIndex = (i == AppSettings.index(of: systemSize)) ? nil : i
+    }
+
+    private func nudge(by delta: Int) {
+        let current = settings.overrideIndex ?? AppSettings.index(of: systemSize)
+        let clamped = max(0, min(AppSettings.steps.count - 1, current + delta))
+        setStep(clamped)
     }
 
     /// Transfer size of the archive as installed. Empty when no manifest is
@@ -60,13 +67,19 @@ struct SettingsView: View {
                         HStack(spacing: 12) {
                             // Fixed sizes: slider end-markers, not body text,
                             // so they must not scale with the value they set.
-                            Text("A").font(.system(size: 13))
+                            // Also tappable, each moving the size by one notch.
+                            Button { nudge(by: -1) } label: {
+                                Text("A").font(.system(size: 13))
+                            }
                             Slider(value: sizeSlider,
                                    in: 0...Double(AppSettings.steps.count - 1),
                                    step: 1)
-                            Text("A").font(.system(size: 24))
+                            Button { nudge(by: 1) } label: {
+                                Text("A").font(.system(size: 24))
+                            }
                         }
                         .foregroundStyle(.secondary)
+                        .buttonStyle(.plain)
 
                         HStack {
                             Text(settings.isOverriding

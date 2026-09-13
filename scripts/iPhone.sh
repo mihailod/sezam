@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Build, install and launch Sezam YU on the paired iPhone — the same thing as
+# Build, install and launch Sezam BBS on the paired iPhone — the same thing as
 # hitting Run in Xcode.
 #
 #   ./scripts/iPhone.sh setup       record the paired iPhone in .device-iphone
