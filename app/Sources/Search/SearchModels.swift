@@ -33,9 +33,10 @@ struct MessageHit: Identifiable, Hashable {
 /// section is a shortlist of the eight most prolific matches, and re-sorting
 /// eight names by date would answer no question anyone asks.
 ///
-/// Measured on the full archive, warm, median of five: every order costs about
-/// the same as the default. The heaviest prefix, "beog*" at 435k hits, takes
-/// 261 ms by relevance, ~100 ms by date and 339 ms by replies.
+/// Measured on the full archive, warm, median of five. The heaviest prefix,
+/// "beog*" at 435k hits, takes 261 ms by relevance, ~100 ms by date and 339 ms
+/// by replies -- the default, so the slowest order is the one every search
+/// pays. On an ordinary word ("windows", 22k hits) that is 23 ms.
 enum MessageSearchSort: String, CaseIterable, Identifiable, Hashable {
     case relevance, mostReplies, oldest, newest
     var id: String { rawValue }

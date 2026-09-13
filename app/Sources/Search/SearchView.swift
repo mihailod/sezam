@@ -20,7 +20,10 @@ final class SearchController {
 
     /// Kept across searches for the life of the tab: someone reading oldest
     /// first is still reading oldest first after refining the words.
-    private(set) var sort: MessageSearchSort = .relevance
+    ///
+    /// Most Replies by default: in an archive of conversations, the messages
+    /// that started one are usually the ones worth landing on first.
+    private(set) var sort: MessageSearchSort = .mostReplies
 
     /// Bumped by every search. Queries run off the main actor, so an older one
     /// can finish after a newer one; only the newest may publish results.
