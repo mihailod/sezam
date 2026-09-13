@@ -36,6 +36,12 @@ final class MessagePager {
     private var earliestVolumeIndex = 0
     private var earliestSeq = 0
 
+    /// Per screen, not shared: a thread opened from a search hit has to open
+    /// in Oldest, around that message, whatever the previous thread was left on.
+    private(set) var sort: ThreadSort = .oldest
+    /// How far into the whole-topic order Newest and Most Replies have read.
+    private var topicOffset = 0
+
     init(topic: TopicSummary, anchor: MessageAnchor? = nil) {
         self.topic = topic
         self.anchor = anchor
@@ -82,6 +88,10 @@ final class MessagePager {
     /// a median of 5 messages away, so this is usually a no-op.
     func reveal(reply: ReplyRef, in message: MessageRow) -> Int64? {
         let key = VolumeSeq(topicID: message.topicID, seq: reply.seq)
+        // Only Oldest guarantees a reply lies further down. In the other orders
+        // it could be anywhere, and paging "until found" could read all 25,425
+        // messages of a topic; the view opens it in context instead.
+        guard sort == .oldest else { return rowID[key] }
         while rowID[key] == nil, !reachedEnd {
             let before = items.count
             loadMore()
@@ -100,7 +110,9 @@ final class MessagePager {
     /// itself, because `canLoadEarlier` becomes false.
     func canJump(to message: MessageRow) -> Bool {
         guard message.replySeq != nil else { return false }
-        return parentID(of: message) != nil || canLoadEarlier
+        // `canLoadEarlier` is always false outside Oldest, where the query
+        // says outright whether the parent exists.
+        return parentID(of: message) != nil || canLoadEarlier || message.parentExists == true
     }
 
     /// Pages backwards until the parent is in memory, and answers with its row.
@@ -170,7 +182,44 @@ final class MessagePager {
         canLoadEarlier = earliestVolumeIndex > 0 || earliestSeq > 1
     }
 
+    /// Re-reads the topic in another order, from the top of that order.
+    ///
+    /// Oldest restarts at the first message, not at an anchor the thread may
+    /// have opened on: once the reader has asked for the topic in some order,
+    /// the one message they arrived at is no longer the point.
+    func setSort(_ new: ThreadSort) {
+        guard new != sort, !volumes.isEmpty else { return }
+        sort = new
+        items = []
+        rowID = [:]
+        children = [:]
+        pendingScroll = nil
+        reachedEnd = false
+        canLoadEarlier = false
+        volumeIndex = 0
+        lastSeq = 0
+        earliestVolumeIndex = 0
+        earliestSeq = 1
+        topicOffset = 0
+        loadMore()
+    }
+
+    /// A page of Newest or Most Replies, over every volume at once.
+    private func loadTopicPage() {
+        guard !isLoading, !reachedEnd else { return }
+        isLoading = true
+        defer { isLoading = false }
+        let page = (try? BrowseRepository.topicMessages(volumeIDs: volumes.map(\.id), sort: sort,
+                                                        limit: pageSize, offset: topicOffset)) ?? []
+        for m in page { rowID[VolumeSeq(topicID: m.topicID, seq: m.seq)] = m.id }
+        loadReplies(for: page)
+        items.append(contentsOf: page)
+        topicOffset += page.count
+        if page.count < pageSize { reachedEnd = true }
+    }
+
     func loadMore() {
+        if sort != .oldest { loadTopicPage(); return }
         guard !isLoading, !reachedEnd else { return }
         isLoading = true
         defer { isLoading = false }
@@ -266,6 +315,9 @@ struct MessageListView: View {
                         .listRowSeparator(.hidden)
                 }
             }
+            // A fresh identity per order, so a re-sorted thread opens at the
+            // top rather than holding the offset of rows that have all moved.
+            .id(pager.sort)
             .listStyle(.plain)
             // The full path, not the bare topic name: a thread is reached from
             // a search hit and from a user's history as often as by drilling
@@ -296,6 +348,11 @@ struct MessageListView: View {
                     // on a narrow phone.
                     .minimumScaleFactor(0.7)
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    SortMenu(selection: Binding(get: { pager.sort },
+                                                set: { pager.setSort($0) }),
+                             compact: true)
+                }
             }
             .task {
                 pager.start()
@@ -319,7 +376,9 @@ struct MessageListView: View {
     /// worse answer to the same request. Arriving from a search hit or a
     /// profile starts mid-thread, and there this pushes the thread proper.
     private func openFromStart(using proxy: ScrollViewProxy) {
-        if !pager.canLoadEarlier, let first = pager.items.first {
+        // Only in Oldest is the first row the first message; in the other
+        // orders the start of the topic is somewhere down the list.
+        if pager.sort == .oldest, !pager.canLoadEarlier, let first = pager.items.first {
             withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(first.id, anchor: .top) }
         } else {
             router.path.append(ThreadTarget(topic: topic, anchor: nil))
@@ -332,16 +391,30 @@ struct MessageListView: View {
     /// search hit or a profile starts the reader mid-thread, where the parent
     /// is almost never already in memory.
     private func jump(toParentOf message: MessageRow, using proxy: ScrollViewProxy) {
-        guard let target = pager.reveal(parentOf: message) else { return }
-        land(on: target, using: proxy)
+        if let target = pager.reveal(parentOf: message) {
+            land(on: target, using: proxy)
+        } else if pager.sort != .oldest, let seq = message.replySeq {
+            openInContext(MessageAnchor(topicID: message.topicID, seq: seq))
+        }
+    }
+
+    /// Outside Oldest a message not already on screen has no position to page
+    /// towards -- in Most Replies its place depends on its reply count, not on
+    /// when it was written. So it opens where it belongs, in the thread as it
+    /// happened, and Back returns to this list.
+    private func openInContext(_ anchor: MessageAnchor) {
+        router.path.append(ThreadTarget(topic: topic, anchor: anchor))
     }
 
     /// The same move forwards: reads whatever later messages it takes to put
     /// the reply on screen, then scrolls to it.
     private func jump(toReply reply: ReplyRef, of message: MessageRow,
                       using proxy: ScrollViewProxy) {
-        guard let target = pager.reveal(reply: reply, in: message) else { return }
-        land(on: target, using: proxy)
+        if let target = pager.reveal(reply: reply, in: message) {
+            land(on: target, using: proxy)
+        } else if pager.sort != .oldest {
+            openInContext(MessageAnchor(topicID: message.topicID, seq: reply.seq))
+        }
     }
 
     private func land(on target: Int64, using proxy: ScrollViewProxy) {

@@ -85,6 +85,26 @@ enum ArchiveSort: String, CaseIterable, Identifiable {
     }
 }
 
+/// How a thread's messages are ordered.
+///
+/// Oldest is the conversation as it happened, and the only order in which
+/// "earlier" and "later" mean something -- it keeps the anchored opening, the
+/// Load earlier button and paging to a reply's parent. Newest and Most Replies
+/// are views over the whole topic at once.
+enum ThreadSort: String, CaseIterable, Identifiable, SortOption {
+    // Declaration order is menu order: the default leads.
+    case oldest, newest, mostReplies
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .oldest:      return "Oldest"
+        case .newest:      return "Newest"
+        case .mostReplies: return "Most Replies"
+        }
+    }
+}
+
 struct MessageRow: Identifiable, Hashable {
     let id: Int64
     let topicID: Int64
@@ -95,6 +115,12 @@ struct MessageRow: Identifiable, Hashable {
     let replySeq: Int?
     let replyAuthor: String?
     let volume: String
+    /// Whether the message this replies to is in the archive. Only the whole-
+    /// topic orders fill it in: there the parent may be anywhere, so a hint
+    /// cannot be judged by whether earlier pages remain, and 2,005 replies
+    /// point at messages deleted decades ago. Nil in Oldest, which does not
+    /// need it.
+    var parentExists: Bool? = nil
 
     /// "19 Nov 1991 07:54": in a thread the time of day is worth showing.
     var displayDate: String { ArchiveDate.dayTime(timestamp) ?? "" }

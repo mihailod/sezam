@@ -13,6 +13,11 @@ where AllCases: RandomAccessCollection {
 /// header here, with or without .inline, so the checkmark is drawn by hand.
 struct SortMenu<Option: SortOption>: View {
     @Binding var selection: Option
+    /// Icon only, for a bar that is already full -- the thread view's title is
+    /// two tappable halves that shrink to fit, and a worded label beside them
+    /// would squeeze "PCUSER · tekst.procesori" into an ellipsis. The menu's
+    /// checkmark still says which order is in force.
+    var compact = false
 
     var body: some View {
         Menu {
@@ -30,9 +35,14 @@ struct SortMenu<Option: SortOption>: View {
                 }
             }
         } label: {
-            Label(selection.label, systemImage: "arrow.up.arrow.down")
-                .labelStyle(.titleAndIcon)
-                .font(.footnote)
+            if compact {
+                Image(systemName: "arrow.up.arrow.down")
+                    .accessibilityLabel("Sort by \(selection.label)")
+            } else {
+                Label(selection.label, systemImage: "arrow.up.arrow.down")
+                    .labelStyle(.titleAndIcon)
+                    .font(.footnote)
+            }
         }
     }
 }

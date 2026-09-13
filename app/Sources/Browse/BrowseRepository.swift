@@ -132,6 +132,54 @@ enum BrowseRepository {
         }
     }
 
+    /// A page of a whole topic -- every volume at once -- in Newest or Most
+    /// Replies order. Oldest keeps its per-volume keyset walk in `messages`.
+    ///
+    /// OFFSET rather than a keyset, because Most Replies has no cursor to key
+    /// on. Measured on the largest topic in the archive, FORUM · srbija at
+    /// 25,425 messages across 17 volumes: 17-19 ms for the first page, 48-76 ms
+    /// three thousand rows in. The order is total -- a volume and a seq name
+    /// exactly one message -- so no row repeats or vanishes between pages.
+    static func topicMessages(volumeIDs: [Int64], sort: ThreadSort,
+                              limit: Int, offset: Int) throws -> [MessageRow] {
+        guard let pool, !volumeIDs.isEmpty else { return [] }
+        let holes = Array(repeating: "?", count: volumeIDs.count).joined(separator: ",")
+        let order: String
+        switch sort {
+        case .oldest:      order = "c.ord, c.volume, m.seq"
+        case .newest:      order = "c.ord DESC, c.volume DESC, m.seq DESC"
+        // Ties in the order Oldest would show them, as asked.
+        case .mostReplies: order = "replies DESC, c.ord, c.volume, m.seq"
+        }
+        var args: [DatabaseValueConvertible] = volumeIDs
+        args.append(contentsOf: [limit, offset] as [DatabaseValueConvertible])
+        return try pool.read { db in
+            try Row.fetchAll(db, sql: """
+                SELECT m.id AS id, m.seq AS seq, m.ts AS ts, a.username AS author,
+                       m.topic_id AS topic_id, m.body AS body,
+                       m.reply_seq AS rseq, m.reply_author AS rauthor, c.volume AS volume,
+                       (SELECT count(*) FROM message r
+                        WHERE r.topic_id = m.topic_id AND r.reply_seq = m.seq) AS replies,
+                       EXISTS (SELECT 1 FROM message p
+                               WHERE p.topic_id = m.topic_id AND p.seq = m.reply_seq) AS parent_exists
+                FROM message m
+                JOIN author a     ON a.id = m.author_id
+                JOIN topic t      ON t.id = m.topic_id
+                JOIN conference c ON c.id = t.conf_id
+                WHERE m.topic_id IN (\(holes))
+                ORDER BY \(order)
+                LIMIT ? OFFSET ?
+                """, arguments: StatementArguments(args)).map {
+                MessageRow(id: $0["id"], topicID: $0["topic_id"] ?? 0,
+                           seq: $0["seq"] ?? 0, timestamp: $0["ts"],
+                           author: $0["author"], body: $0["body"] ?? "",
+                           replySeq: $0["rseq"], replyAuthor: $0["rauthor"],
+                           volume: $0["volume"],
+                           parentExists: (($0["parent_exists"] as Int?) ?? 0) != 0)
+            }
+        }
+    }
+
     /// Who replied to each of these messages -- the reverse of `reply_seq`, for
     /// the "replied to by" hints.
     ///
