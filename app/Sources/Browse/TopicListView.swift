@@ -1,7 +1,10 @@
 import SwiftUI
 
 struct TopicListView: View {
-    let family: ConferenceFamily
+    /// The conference name alone: the row that pushes this screen has a whole
+    /// `ConferenceFamily`, but a thread's title bar can only offer the name, and
+    /// this view never needed more than that.
+    let family: String
     @State private var topics: [TopicSummary] = []
     @Bindable private var sort = BrowseSortSelection.shared
 
@@ -26,7 +29,7 @@ struct TopicListView: View {
                 }
             }
         }
-        .navigationTitle(family.family)
+        .navigationTitle(family)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -35,7 +38,7 @@ struct TopicListView: View {
         }
         .overlay { if topics.isEmpty { ProgressView() } }
         .task {
-            topics = (try? BrowseRepository.topics(in: family.family)) ?? []
+            topics = (try? BrowseRepository.topics(in: family)) ?? []
         }
     }
 

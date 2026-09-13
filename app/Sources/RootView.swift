@@ -39,8 +39,17 @@ extension View {
             .navigationDestination(for: ThreadTarget.self) {
                 MessageListView(topic: $0.topic, anchor: $0.anchor, router: router)
             }
-            .navigationDestination(for: ConferenceFamily.self) { TopicListView(family: $0) }
+            .navigationDestination(for: ConferenceFamily.self) { TopicListView(family: $0.family) }
+            .navigationDestination(for: ConferenceLink.self) { TopicListView(family: $0.family) }
     }
+}
+
+/// A conference reached by name rather than by its row -- from the two halves
+/// of a thread's title bar, where only the name is known. Its own type, not a
+/// bare String: `navigationDestination(for: String.self)` would claim every
+/// string pushed onto any stack in the app.
+struct ConferenceLink: Hashable {
+    let family: String
 }
 
 struct RootView: View {

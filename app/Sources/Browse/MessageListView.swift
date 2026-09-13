@@ -231,6 +231,28 @@ struct MessageListView: View {
             // "tekst.procesori" would read as one three-part name.
             .navigationTitle("\(topic.family) · \(topic.name)")
             .navigationBarTitleDisplayMode(.inline)
+            // The same text as the title above, as two buttons. The string
+            // title stays declared because it is what the *next* pushed screen
+            // shows on its back button; this only replaces what is drawn here.
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    HStack(spacing: 5) {
+                        Button(topic.family) {
+                            router.path.append(ConferenceLink(family: topic.family))
+                        }
+                        Text("·").foregroundStyle(.secondary)
+                        Button(topic.name) { openFromStart(using: proxy) }
+                    }
+                    .font(.headline)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.tint)
+                    .lineLimit(1)
+                    // "PCUSER · tekst.procesori" is the widest pair in the
+                    // archive and does not fit a principal item at .headline
+                    // on a narrow phone.
+                    .minimumScaleFactor(0.7)
+                }
+            }
             .task {
                 pager.start()
                 if let target = pager.consumePendingScroll() {
@@ -242,6 +264,21 @@ struct MessageListView: View {
                     withAnimation(.easeOut(duration: 0.5)) { highlighted = nil }
                 }
             }
+        }
+    }
+
+    /// The topic from its first message.
+    ///
+    /// When the thread is already open from the start -- the usual case when
+    /// you drilled down to it -- that is a scroll, not a push: opening a second
+    /// identical screen and making the reader tap Back out of it would be a
+    /// worse answer to the same request. Arriving from a search hit or a
+    /// profile starts mid-thread, and there this pushes the thread proper.
+    private func openFromStart(using proxy: ScrollViewProxy) {
+        if !pager.canLoadEarlier, let first = pager.items.first {
+            withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(first.id, anchor: .top) }
+        } else {
+            router.path.append(ThreadTarget(topic: topic, anchor: nil))
         }
     }
 
