@@ -19,6 +19,10 @@ final class MessagePager {
     /// loaded by the time its reply is on screen. The 2,005 archive-wide links
     /// whose parent was deleted simply never resolve, and render inert.
     private var rowID: [VolumeSeq: Int64] = [:]
+    /// The reverse links: who replied to each message on screen. Filled one
+    /// page at a time, since a message's replies can be anywhere later in the
+    /// volume and are usually not loaded yet.
+    private var children: [VolumeSeq: [ReplyRef]] = [:]
     private var volumes: [TopicVolume] = []
     private var volumeIndex = 0
     private var lastSeq = 0
@@ -48,6 +52,42 @@ final class MessagePager {
     func parentID(of message: MessageRow) -> Int64? {
         guard let seq = message.replySeq else { return nil }
         return rowID[VolumeSeq(topicID: message.topicID, seq: seq)]
+    }
+
+    /// The replies to a message, in the order they were written.
+    func replies(to message: MessageRow) -> [ReplyRef] {
+        children[VolumeSeq(topicID: message.topicID, seq: message.seq)] ?? []
+    }
+
+    /// Records who replied to the messages in a freshly loaded page.
+    ///
+    /// Grouped by volume because a page can straddle two, and `reply_seq` is
+    /// only meaningful within one volume -- keyed globally, seq 40 of one
+    /// volume would claim the replies of seq 40 in the next.
+    private func loadReplies(for page: [MessageRow]) {
+        var seqsByVolume: [Int64: [Int]] = [:]
+        for m in page { seqsByVolume[m.topicID, default: []].append(m.seq) }
+        for (topicID, seqs) in seqsByVolume {
+            guard let found = try? BrowseRepository.replies(topicID: topicID, toSeqs: seqs)
+            else { continue }
+            for (parentSeq, refs) in found {
+                children[VolumeSeq(topicID: topicID, seq: parentSeq)] = refs
+            }
+        }
+    }
+
+    /// Pages forward until a reply is in memory, and answers with its row.
+    ///
+    /// The mirror of `reveal(parentOf:)`: replies sit later in the same volume,
+    /// a median of 5 messages away, so this is usually a no-op.
+    func reveal(reply: ReplyRef, in message: MessageRow) -> Int64? {
+        let key = VolumeSeq(topicID: message.topicID, seq: reply.seq)
+        while rowID[key] == nil, !reachedEnd {
+            let before = items.count
+            loadMore()
+            if items.count == before { break }
+        }
+        return rowID[key]
     }
 
     /// Whether the hint is worth offering: the parent is in memory, or is still
@@ -124,6 +164,7 @@ final class MessagePager {
             return
         }
         for m in page { rowID[VolumeSeq(topicID: m.topicID, seq: m.seq)] = m.id }
+        loadReplies(for: page)
         items.insert(contentsOf: page, at: 0)
         earliestSeq = page.first?.seq ?? 1
         canLoadEarlier = earliestVolumeIndex > 0 || earliestSeq > 1
@@ -148,6 +189,7 @@ final class MessagePager {
                 continue
             }
             for m in page { rowID[VolumeSeq(topicID: m.topicID, seq: m.seq)] = m.id }
+            loadReplies(for: page)
             items.append(contentsOf: page)
             added += page.count
             lastSeq = page.last?.seq ?? lastSeq
@@ -207,7 +249,9 @@ struct MessageListView: View {
                 ForEach(pager.items) { msg in
                     MessageCell(message: msg,
                                 canJump: pager.canJump(to: msg),
+                                replies: pager.replies(to: msg),
                                 onJump: { jump(toParentOf: msg, using: proxy) },
+                                onReply: { jump(toReply: $0, of: msg, using: proxy) },
                                 onAuthor: { router.path.append(AuthorLink(username: $0)) })
                         .id(msg.id)
                         .listRowBackground(highlighted == msg.id
@@ -289,6 +333,18 @@ struct MessageListView: View {
     /// is almost never already in memory.
     private func jump(toParentOf message: MessageRow, using proxy: ScrollViewProxy) {
         guard let target = pager.reveal(parentOf: message) else { return }
+        land(on: target, using: proxy)
+    }
+
+    /// The same move forwards: reads whatever later messages it takes to put
+    /// the reply on screen, then scrolls to it.
+    private func jump(toReply reply: ReplyRef, of message: MessageRow,
+                      using proxy: ScrollViewProxy) {
+        guard let target = pager.reveal(reply: reply, in: message) else { return }
+        land(on: target, using: proxy)
+    }
+
+    private func land(on target: Int64, using proxy: ScrollViewProxy) {
         withAnimation(.easeInOut(duration: 0.25)) {
             proxy.scrollTo(target, anchor: .top)
             highlighted = target
@@ -349,8 +405,16 @@ private struct MessageCell: View {
     @State private var settings = AppSettings.shared
     let message: MessageRow
     var canJump = false
+    var replies: [ReplyRef] = []
     var onJump: () -> Void = { }
+    var onReply: (ReplyRef) -> Void = { _ in }
     var onAuthor: (String) -> Void = { _ in }
+
+    /// Three covers 97% of replied-to messages; the rest open on the +N. One
+    /// message in this archive was answered 63 times, and listing those inline
+    /// would bury the message they are answering.
+    private static let inlineLimit = 3
+    @State private var showAllReplies = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -381,6 +445,7 @@ private struct MessageCell: View {
                     Text(reply).font(.caption2).foregroundStyle(.secondary)
                 }
             }
+            if !replies.isEmpty { repliedToBy }
             // Monospaced: these messages are full of box-drawing art and
             // hand-aligned columns that a proportional font would destroy.
             Text(message.displayBody)
@@ -389,5 +454,91 @@ private struct MessageCell: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, 6)
+    }
+
+    /// "↳ #130 ana  #145 vlada  +3" -- who answered this message.
+    ///
+    /// The arrow turns down and forward, against the ↩ above it that turns
+    /// back: the pair reads as backwards and forwards through the conversation
+    /// without needing a legend. Drawn once at the head of the row rather than
+    /// on every chip, so three replies do not become three arrows.
+    private var repliedToBy: some View {
+        let shown = showAllReplies ? replies : Array(replies.prefix(Self.inlineLimit))
+        let hidden = replies.count - shown.count
+        // One row that wraps rather than truncates. Three chips of "#130 ana"
+        // fit a phone comfortably; expanding a 63-reply message via +N is what
+        // actually needs the wrapping.
+        return WrappingHStack(spacing: 8, lineSpacing: 3) {
+            Text("↳").font(.caption2).foregroundStyle(.secondary)
+            ForEach(shown) { ref in
+                Button { onReply(ref) } label: {
+                    Text("#\(ref.seq) \(ref.author)").font(.caption2)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.tint)
+            }
+            if hidden > 0 {
+                Button { showAllReplies = true } label: {
+                    Text("+\(hidden)").font(.caption2.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+/// Lays subviews out left to right, wrapping to a new line when the next one
+/// would not fit. SwiftUI has no flow layout of its own, and the alternatives
+/// are both wrong here: an HStack truncates, and a VStack puts every reply on
+/// its own line even when three would fit on one.
+private struct WrappingHStack: Layout {
+    var spacing: CGFloat = 8
+    var lineSpacing: CGFloat = 3
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let width = proposal.replacingUnspecifiedDimensions().width
+        let rows = layout(subviews: subviews, in: width)
+        let height = rows.map(\.height).reduce(0, +)
+            + lineSpacing * CGFloat(max(0, rows.count - 1))
+        return CGSize(width: width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize,
+                       subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for row in layout(subviews: subviews, in: bounds.width) {
+            var x = bounds.minX
+            for i in row.indices {
+                let size = subviews[i].sizeThatFits(.unspecified)
+                subviews[i].place(at: CGPoint(x: x, y: y + (row.height - size.height) / 2),
+                                  proposal: ProposedViewSize(size))
+                x += size.width + spacing
+            }
+            y += row.height + lineSpacing
+        }
+    }
+
+    private struct Row { var indices: [Int] = []; var height: CGFloat = 0 }
+
+    private func layout(subviews: Subviews, in width: CGFloat) -> [Row] {
+        var rows: [Row] = []
+        var row = Row()
+        var x: CGFloat = 0
+        for i in subviews.indices {
+            let size = subviews[i].sizeThatFits(.unspecified)
+            // Never break before the first item on a line: something wider than
+            // the whole row still has to go somewhere.
+            if !row.indices.isEmpty, x + size.width > width {
+                rows.append(row)
+                row = Row()
+                x = 0
+            }
+            row.indices.append(i)
+            row.height = max(row.height, size.height)
+            x += size.width + spacing
+        }
+        if !row.indices.isEmpty { rows.append(row) }
+        return rows
     }
 }

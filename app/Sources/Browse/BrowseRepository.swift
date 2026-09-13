@@ -131,4 +131,42 @@ enum BrowseRepository {
             }
         }
     }
+
+    /// Who replied to each of these messages -- the reverse of `reply_seq`, for
+    /// the "replied to by" hints.
+    ///
+    /// One query for a whole page rather than one per message. Served by
+    /// ix_msg_reply(topic_id, reply_seq), which already existed: a 60-parent
+    /// page on the archive's densest topic measured 0.67 ms for 83 children.
+    ///
+    /// Ordered by seq, so the hints read in the order the replies were written.
+    static func replies(topicID: Int64, toSeqs seqs: [Int]) throws -> [Int: [ReplyRef]] {
+        guard let pool, !seqs.isEmpty else { return [:] }
+        let holes = Array(repeating: "?", count: seqs.count).joined(separator: ",")
+        var args: [DatabaseValueConvertible] = [topicID]
+        args.append(contentsOf: seqs)
+        return try pool.read { db in
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT m.reply_seq AS parent, m.seq AS seq, m.id AS id, a.username AS author
+                FROM message m
+                JOIN author a ON a.id = m.author_id
+                WHERE m.topic_id = ? AND m.reply_seq IN (\(holes))
+                ORDER BY m.seq
+                """, arguments: StatementArguments(args))
+            var out: [Int: [ReplyRef]] = [:]
+            for row in rows {
+                guard let parent = row["parent"] as Int? else { continue }
+                out[parent, default: []].append(
+                    ReplyRef(id: row["id"], seq: row["seq"] ?? 0, author: row["author"] ?? ""))
+            }
+            return out
+        }
+    }
+}
+
+/// One reply to a message: enough to label a hint and jump to it.
+struct ReplyRef: Hashable, Identifiable {
+    let id: Int64
+    let seq: Int
+    let author: String
 }
