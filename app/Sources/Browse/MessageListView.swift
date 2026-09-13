@@ -50,6 +50,37 @@ final class MessagePager {
         return rowID[VolumeSeq(topicID: message.topicID, seq: seq)]
     }
 
+    /// Whether the hint is worth offering: the parent is in memory, or is still
+    /// somewhere earlier in the thread and can be fetched on demand.
+    ///
+    /// Only when everything earlier has been read and the parent is still
+    /// absent is it genuinely gone -- 2,005 of the archive's 399,442 replies
+    /// point at a message that was deleted. Those are the only inert ones, and
+    /// a thread that exhausts itself during a jump turns its hint grey by
+    /// itself, because `canLoadEarlier` becomes false.
+    func canJump(to message: MessageRow) -> Bool {
+        guard message.replySeq != nil else { return false }
+        return parentID(of: message) != nil || canLoadEarlier
+    }
+
+    /// Pages backwards until the parent is in memory, and answers with its row.
+    ///
+    /// Cheap in practice: replies point back a median of 5 messages and 99% of
+    /// them within 180, so this is usually nothing or a single extra page. The
+    /// pathological case in this archive is a reply 5,002 messages back, which
+    /// is why it stops the moment a page adds nothing rather than trusting the
+    /// loop to end on its own.
+    func reveal(parentOf message: MessageRow) -> Int64? {
+        guard let seq = message.replySeq else { return nil }
+        let key = VolumeSeq(topicID: message.topicID, seq: seq)
+        while rowID[key] == nil, canLoadEarlier {
+            let before = items.count
+            loadEarlier()
+            if items.count == before { break }
+        }
+        return rowID[key]
+    }
+
     func start() {
         guard volumes.isEmpty, !reachedEnd else { return }
         volumes = (try? BrowseRepository.volumes(family: topic.family, topic: topic.name)) ?? []
@@ -175,8 +206,8 @@ struct MessageListView: View {
                 }
                 ForEach(pager.items) { msg in
                     MessageCell(message: msg,
-                                parentID: pager.parentID(of: msg),
-                                onJump: { target in jump(to: target, using: proxy) },
+                                canJump: pager.canJump(to: msg),
+                                onJump: { jump(toParentOf: msg, using: proxy) },
                                 onAuthor: { router.path.append(AuthorLink(username: $0)) })
                         .id(msg.id)
                         .listRowBackground(highlighted == msg.id
@@ -214,7 +245,13 @@ struct MessageListView: View {
         }
     }
 
-    private func jump(to target: Int64, using proxy: ScrollViewProxy) {
+    /// Reads whatever earlier messages it takes to put the parent on screen,
+    /// then scrolls to it. Doing this on the tap rather than up front is what
+    /// lets the hint be live from the moment the thread opens: arriving from a
+    /// search hit or a profile starts the reader mid-thread, where the parent
+    /// is almost never already in memory.
+    private func jump(toParentOf message: MessageRow, using proxy: ScrollViewProxy) {
+        guard let target = pager.reveal(parentOf: message) else { return }
         withAnimation(.easeInOut(duration: 0.25)) {
             proxy.scrollTo(target, anchor: .top)
             highlighted = target
@@ -274,8 +311,8 @@ struct NoProfileView: View {
 private struct MessageCell: View {
     @State private var settings = AppSettings.shared
     let message: MessageRow
-    var parentID: Int64?
-    var onJump: (Int64) -> Void = { _ in }
+    var canJump = false
+    var onJump: () -> Void = { }
     var onAuthor: (String) -> Void = { _ in }
 
     var body: some View {
@@ -295,15 +332,15 @@ private struct MessageCell: View {
                 Text(message.displayDate).font(.caption2).foregroundStyle(.secondary)
             }
             if let reply = message.replyLabel {
-                if let parentID {
-                    Button { onJump(parentID) } label: {
+                if canJump {
+                    Button(action: onJump) {
                         Text(reply).font(.caption2)
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(.tint)
                 } else {
-                    // Parent deleted or not yet paged in: show it, but do not
-                    // dress it up as something that responds to a tap.
+                    // The parent was deleted decades ago: show the hint, but do
+                    // not dress it up as something that responds to a tap.
                     Text(reply).font(.caption2).foregroundStyle(.secondary)
                 }
             }
