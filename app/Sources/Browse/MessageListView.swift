@@ -192,7 +192,13 @@ struct MessageListView: View {
                 }
             }
             .listStyle(.plain)
-            .navigationTitle(topic.name)
+            // The full path, not the bare topic name: a thread is reached from
+            // a search hit and from a user's history as often as by drilling
+            // down, and in those two the conference is nowhere else on screen.
+            // The same bullet the rows use to join facts. A plain dot would be
+            // ambiguous here: topic names carry their own dots, so PCUSER and
+            // "tekst.procesori" would read as one three-part name.
+            .navigationTitle("\(topic.family) · \(topic.name)")
             .navigationBarTitleDisplayMode(.inline)
             .task {
                 pager.start()
