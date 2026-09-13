@@ -42,7 +42,8 @@ struct UserItem: Identifiable, Hashable {
 }
 
 enum UserSort: String, CaseIterable, Identifiable {
-    case username, firstName, lastName, city, company, joined, lastSeen, messages
+    // Declaration order is menu order: `allCases` drives the Sort menu.
+    case joined, messages, username, firstName, lastName, city, company, lastSeen
     var id: String { rawValue }
 
     var label: String {

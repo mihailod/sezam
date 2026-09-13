@@ -3,7 +3,7 @@ import SwiftUI
 struct UsersView: View {
     @State private var all: [UserItem] = []
     @State private var router = NavRouter()
-    @State private var sort: UserSort = .username
+    @State private var sort: UserSort = .joined
     @State private var loaded = false
 
     /// Cached, not computed: grouping and sorting 8,105 users on every body
