@@ -38,6 +38,6 @@ struct ArchiveManifest: Codable, Equatable, Sendable {
             let urls = list.compactMap(URL.init(string:))
             if !urls.isEmpty { return urls }
         }
-        return [URL(string: "http://localhost:8000/sezam-manifest.json")!]
+        return [URL(string: "https://archive.org/download/sezam-manifest/sezam-manifest.json")!]
     }
 }

@@ -43,11 +43,6 @@ targets:
         SezamManifestURLs:
           - https://mihailod.github.io/sezam/build/sezam-manifest.json
           - https://archive.org/download/sezam-manifest/sezam-manifest.json
-        # Permits plain http to localhost ONLY, for testing the download path
-        # against a local server. Production (archive.org) is https and is not
-        # affected; arbitrary loads stay disabled.
-        NSAppTransportSecurity:
-          NSAllowsLocalNetworking: true
     settings:
       base:
         PRODUCT_NAME: Sezam BBS
