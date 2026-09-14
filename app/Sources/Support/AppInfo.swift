@@ -29,8 +29,6 @@ enum AppInfo {
     }
 
     static let epigraphs = [
-        Epigraph(quote: "The purpose of computing is insight, not numbers.",
-                 author: "Richard Hamming"),
         Epigraph(quote: "Data isn\u{2019}t information, any more than fifty tons "
                  + "of cement is a skyscraper.",
                  author: "Clifford Stoll"),

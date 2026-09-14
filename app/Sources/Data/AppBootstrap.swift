@@ -16,9 +16,6 @@ final class AppBootstrap {
     /// real download size rather than a figure baked into the binary.
     var pendingManifest: ArchiveManifest?
     var showConsent = false
-    /// Set when the user asks for a re-download from Settings, so the download
-    /// screen goes straight to the size prompt instead of waiting for a tap.
-    var autoStartInstall = false
 
     /// Download size for the button on the download screen. Nil until a
     /// manifest has answered; the button then just says "Download".
@@ -35,32 +32,6 @@ final class AppBootstrap {
         knownDownloadSize = m.compressedSize
     }
 
-    /// Guards the About screen's manual re-download. A courtesy limit, not
-    /// enforcement: deleting the app clears it. Real rate limiting would need a
-    /// server we do not have.
-    private let lastDownloadKey = "lastSuccessfulDownload"
-    static let redownloadInterval: TimeInterval = 24 * 60 * 60
-
-    var lastDownload: Date? {
-        let t = UserDefaults.standard.double(forKey: lastDownloadKey)
-        return t > 0 ? Date(timeIntervalSince1970: t) : nil
-    }
-
-    var redownloadAvailableAt: Date? {
-        lastDownload.map { $0.addingTimeInterval(Self.redownloadInterval) }
-    }
-
-    var canRedownload: Bool {
-        guard let next = redownloadAvailableAt else { return true }
-        return Date() >= next
-    }
-
-    /// True when the download screen is up because the user asked for a fresh
-    /// copy in Settings, rather than because the installed archive is missing
-    /// or damaged. The screen uses it to drop a line that would only repeat
-    /// the reason shown above it.
-    private(set) var isUserRequestedRedownload = false
-
     /// True while the archive being installed is the one that shipped inside
     /// the app, so the screen can talk about decompressing rather than
     /// downloading. Stays set on failure, so the error is shown in the same
@@ -69,12 +40,8 @@ final class AppBootstrap {
 
     /// Whether this install can be served from the app bundle rather than the
     /// network: the first launch, and equally a damaged archive, where making
-    /// the user fetch 333 MB they already have would be perverse. A
-    /// re-download asked for in Settings deliberately does not qualify --
-    /// fetching a fresh copy is the entire point of it.
-    var canInstallFromBundle: Bool {
-        BundledArchive.isAvailable && !isUserRequestedRedownload
-    }
+    /// the user fetch 333 MB they already have would be perverse.
+    var canInstallFromBundle: Bool { BundledArchive.isAvailable }
 
     /// The first launch: expand what shipped with the app. No consent prompt,
     /// because nothing is transferred and nothing leaves the device.
@@ -88,18 +55,8 @@ final class AppBootstrap {
         }
     }
 
-    /// Hands off to the download screen, which owns the single size-consent
-    /// prompt. The database is only closed once a replacement is verified, so
-    /// cancelling here leaves the installed archive untouched.
-    func startRedownload() {
-        autoStartInstall = true
-        isUserRequestedRedownload = true
-        state = .needsInstall(reason: "Re-downloading the archive.")
-    }
-
     func check() {
         state = .checking
-        isUserRequestedRedownload = false
         guard let manifest = DatabaseLocation.installedManifest() else {
             state = .needsInstall(reason: nil); return
         }
@@ -136,8 +93,6 @@ final class AppBootstrap {
     func install(manifest: ArchiveManifest) async {
         await installer.install(manifest: manifest)
         if case .done = installer.phase {
-            UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastDownloadKey)
-            isUserRequestedRedownload = false
             state = .ready
         }
     }

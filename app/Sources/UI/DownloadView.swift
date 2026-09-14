@@ -59,10 +59,7 @@ struct DownloadView: View {
         .frame(maxWidth: Device.isPad ? Device.readableColumnWidth : .infinity)
         .frame(maxWidth: .infinity)
         .task {
-            if bootstrap.autoStartInstall {
-                bootstrap.autoStartInstall = false
-                await bootstrap.requestInstall()
-            } else if bootstrap.canInstallFromBundle {
+            if bootstrap.canInstallFromBundle {
                 // Nothing to ask and nothing to fetch: begin the moment the
                 // screen appears, so the first launch is a progress bar rather
                 // than a button the user has no reason not to tap.
@@ -106,16 +103,15 @@ struct DownloadView: View {
 
     /// An attempt that failed is worth offering again by name. Otherwise the
     /// button says what it will do, with the size once a manifest has answered:
-    /// a re-download the user asked for is not a retry, nothing went wrong.
     private var buttonTitle: String {
         if case .failed = bootstrap.installer.phase { return "Try Again" }
         // No size on the bundled button: the megabytes were the warning about
         // a transfer, and there is no transfer.
         if isBundled { return "Decompress the Archive" }
         let size = bootstrap.knownDownloadSize.map { " (\(Megabytes.text($0)))" } ?? ""
-        // Asked for in Settings, or forced by an archive that will not pass its
-        // checks: either way a copy is already installed, so this replaces it.
-        if bootstrap.isUserRequestedRedownload || reason != nil { return "Re-download" + size }
+        // An archive that will not pass its checks: a copy is already
+        // installed, so this replaces it.
+        if reason != nil { return "Re-download" + size }
         return "Download" + size
     }
 
@@ -148,11 +144,9 @@ struct DownloadView: View {
         if case let .failed(msg) = bootstrap.installer.phase { return msg }
         // Whatever is happening is named in the title and measured by the bar.
         if isDownloading { return nil }
-        // A re-download the user asked for already says so in the reason; a
-        // second sentence would only repeat it. A damaged or missing archive
-        // states the problem, so there it is worth saying what happens next.
+        // A damaged or missing archive states the problem, so it is worth
+        // saying what happens next.
         if let reason {
-            if bootstrap.isUserRequestedRedownload { return reason }
             return isBundled ? "\(reason)\nDecompressing it again."
                              : "\(reason)\nDownloading it again."
         }

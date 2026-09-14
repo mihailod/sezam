@@ -1,9 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(AppBootstrap.self) private var bootstrap
     @State private var settings = AppSettings.shared
-    @State private var confirmRedownload = false
     /// The size actually in effect: the system's when nothing is overridden,
     /// so the slider starts where the user already is rather than snapping.
     @Environment(\.dynamicTypeSize) private var effectiveSize
@@ -28,13 +26,6 @@ struct SettingsView: View {
         let current = settings.overrideIndex ?? AppSettings.index(of: systemSize)
         let clamped = max(0, min(AppSettings.steps.count - 1, current + delta))
         setStep(clamped)
-    }
-
-    /// Transfer size of the archive as installed. Empty when no manifest is
-    /// present, rather than guessing a number.
-    private var archiveSizeLabel: String {
-        guard let m = DatabaseLocation.installedManifest(), m.compressedSize > 0 else { return "" }
-        return " (\(Megabytes.text(m.compressedSize)))"
     }
 
     var body: some View {
@@ -105,27 +96,18 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Button {
-                        confirmRedownload = true
-                    } label: {
-                        Label("Re-download the Archive\(archiveSizeLabel)", systemImage: "arrow.clockwise")
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(AppInfo.credits, id: \.self) { line in
+                            Text(line)
+                                .font(.callout)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
-                    .disabled(!bootstrap.canRedownload)
-
-                    if !bootstrap.canRedownload, let next = bootstrap.redownloadAvailableAt {
-                        Text("Available again \(ArchiveDate.day(next)) "
-                             + "\(next.formatted(date: .omitted, time: .shortened)).")
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                } footer: {
-                    Text(BundledArchive.isAvailable
-                         ? "The Archive is already bundled for offline access. "
-                           + "Tap only if it appears corrupted or incomplete."
-                         : "The Archive is normally downloaded just once for offline "
-                           + "access. Tap only if it appears corrupted or incomplete.")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 2)
                 }
 
-                // Last item in the panel: heading and text share one card.
+                // Heading and text share one card.
                 Section {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(AppInfo.archiveNoticeHeading)
@@ -141,11 +123,10 @@ struct SettingsView: View {
                     .padding(.vertical, 2)
                 }
 
-                // Epigraphs, then the credits card closes the panel.
+                // The epigraphs close the panel.
                 ForEach(AppInfo.epigraphs) { epigraph in
                     Section {
                         VStack(alignment: .leading, spacing: 6) {
-                            // Quotes added at display time, as with the notice above.
                             Text("\u{201C}" + epigraph.quote + "\u{201D}")
                                 .font(.callout.italic())
                                 .fixedSize(horizontal: false, vertical: true)
@@ -157,27 +138,8 @@ struct SettingsView: View {
                         .padding(.vertical, 2)
                     }
                 }
-
-                Section {
-                    VStack(alignment: .leading, spacing: 10) {
-                        ForEach(AppInfo.credits, id: \.self) { line in
-                            Text(line)
-                                .font(.callout)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 2)
-                }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .alert("Re-download the Archive?", isPresented: $confirmRedownload) {
-                Button("Re-download", role: .destructive) { bootstrap.startRedownload() }
-                Button("Cancel", role: .cancel) { }
-            } message: {
-                Text("The existing archive will be replaced. You will be shown the "
-                     + "download size before anything is transferred.")
-            }
         }
     }
 }
