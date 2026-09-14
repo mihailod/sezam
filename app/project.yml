@@ -43,6 +43,9 @@ targets:
         SezamManifestURLs:
           - https://mihailod.github.io/sezam/build/sezam-manifest.json
           - https://archive.org/download/sezam-manifest/sezam-manifest.json
+        # Only OS-provided crypto (HTTPS, CryptoKit SHA-256 checksum): answers
+        # App Store Connect's export-compliance question for every build.
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_NAME: Sezam BBS
