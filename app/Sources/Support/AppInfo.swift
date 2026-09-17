@@ -45,7 +45,7 @@ enum AppInfo {
     static let credits = [
         " ... ... created ... by ... mihailod ... "
             + " ... shouts to ... d.m. / davor ... kcurcic ... mrbin ... shoom ... nradeta ... wisil ... "
-            + "jujo ... baltazar ... spantic ... ikordic ... and cupko ... "
+            + "jujo ... baltazar ... spantic ... ikordic ... jkratica ... viktor ... and cupko ... "
             + "... dedicated to ... dejanr [RIP] ... and vantonic ... ...",
     ]
 
