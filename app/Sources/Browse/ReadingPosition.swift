@@ -18,7 +18,9 @@ import UIKit
 /// about to destroy.
 @MainActor
 final class ReadingPosition {
-    static let space = "thread-reading"
+    /// nonisolated: an immutable string with nothing to protect, read from the
+    /// geometry closures, which are Sendable and so cannot touch main-actor state.
+    nonisolated static let space = "thread-reading"
 
     private struct Mark {
         let id: Int64
