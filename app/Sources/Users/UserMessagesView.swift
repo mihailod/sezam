@@ -153,6 +153,16 @@ struct UserMessagesView: View {
                     .onAppear {
                         if msg.id == pager.items.suffix(6).first?.id { pager.loadMore() }
                     }
+                    .contextMenu {
+                        Button("Copy Message", systemImage: "doc.on.doc") {
+                            MessageClipboard.copy(MessageClipboard.text(
+                                author: user.username,
+                                date: msg.displayDate,
+                                source: "\(msg.source) · "
+                                    + numbering.label(topicID: msg.topicID, seq: msg.seq),
+                                body: msg.body))
+                        }
+                    }
                 }
                 if !pager.reachedEnd {
                     HStack { Spacer(); ProgressView(); Spacer() }

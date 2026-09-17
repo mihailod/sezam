@@ -201,6 +201,18 @@ struct SearchView: View {
                     .onAppear {
                         if hit.id == controller.messages.suffix(6).first?.id { controller.loadMore() }
                     }
+                    // The row shows a snippet, so there is nothing here to
+                    // select: the menu offers the message whole instead.
+                    .contextMenu {
+                        Button("Copy Message", systemImage: "doc.on.doc") {
+                            MessageClipboard.copy(MessageClipboard.text(
+                                author: hit.author,
+                                date: hit.displayDate,
+                                source: "\(hit.source) · "
+                                    + numbering.label(topicID: hit.topicID, seq: hit.seq),
+                                body: hit.body))
+                        }
+                    }
                 }
                 if !controller.reachedEnd {
                     HStack { Spacer(); ProgressView(); Spacer() }

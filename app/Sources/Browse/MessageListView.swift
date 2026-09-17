@@ -303,6 +303,7 @@ struct MessageListView: View {
                 }
                 ForEach(pager.items) { msg in
                     MessageCell(message: msg,
+                                source: "\(topic.family) · \(topic.name)",
                                 canJump: pager.canJump(to: msg),
                                 replies: pager.replies(to: msg),
                                 onJump: { jump(toParentOf: msg, using: proxy) },
@@ -503,8 +504,10 @@ struct NoProfileView: View {
 }
 
 private struct MessageCell: View {
-    @State private var settings = AppSettings.shared
     let message: MessageRow
+    /// "VICEVI · naravi" -- the row shows the path in the title bar, not here,
+    /// but a copied message has to carry where it came from.
+    var source = ""
     var canJump = false
     var replies: [ReplyRef] = []
     var onJump: () -> Void = { }
@@ -515,6 +518,23 @@ private struct MessageCell: View {
     /// message in this archive was answered 63 times, and listing those inline
     /// would bury the message they are answering.
     private let numbering = MessageNumbering.shared
+
+    /// The message with its headline, for "Copy Message".
+    private var clipboardText: String {
+        MessageClipboard.text(
+            author: message.author,
+            date: message.displayDate,
+            source: "\(source) · " + numbering.label(topicID: message.topicID, seq: message.seq),
+            replyTo: message.replySeq.map { seq in
+                let number = numbering.number(topicID: message.topicID, seq: seq)
+                guard let who = message.replyAuthor, !who.isEmpty else { return number }
+                return "\(number) \(who)"
+            },
+            replies: replies.map {
+                "\(numbering.number(topicID: message.topicID, seq: $0.seq)) \($0.author)"
+            },
+            body: message.displayBody)
+    }
 
     /// "↩ #1,399 pera" -- the message this one answers, by its place in the
     /// topic rather than the number the board gave it.
@@ -561,12 +581,12 @@ private struct MessageCell: View {
                 }
             }
             if !replies.isEmpty { repliedToBy }
-            // Monospaced: these messages are full of box-drawing art and
-            // hand-aligned columns that a proportional font would destroy.
-            Text(message.displayBody)
-                .font(settings.messageFont)
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
+            // A selectable text view rather than Text: SwiftUI's selection
+            // takes the whole message with no handles to narrow it, and this
+            // menu also carries "Copy Message".
+            SelectableText(text: message.displayBody,
+                           extraTitle: "Copy Message",
+                           extraAction: { MessageClipboard.copy(clipboardText) })
         }
         .padding(.vertical, 6)
     }
