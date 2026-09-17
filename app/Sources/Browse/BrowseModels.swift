@@ -125,15 +125,6 @@ struct MessageRow: Identifiable, Hashable {
     /// "19 Nov 1991 07:54": in a thread the time of day is worth showing.
     var displayDate: String { ArchiveDate.dayTime(timestamp) ?? "" }
 
-    /// U+FE0E forces text presentation: bare "↩" is drawn by iOS as the blue
-    /// emoji arrow-in-a-box, which sat oddly beside the hairline "↳" of the
-    /// replies below it. The pair has to look like one family of marks.
-    var replyLabel: String? {
-        guard let seq = replySeq else { return nil }
-        if let who = replyAuthor, !who.isEmpty { return "↩\u{FE0E} #\(seq) \(who)" }
-        return "↩\u{FE0E} #\(seq)"
-    }
-
     /// Bodies carry the original CRLF line endings and trailing blank lines.
     var displayBody: String {
         body.replacingOccurrences(of: "\r\n", with: "\n")

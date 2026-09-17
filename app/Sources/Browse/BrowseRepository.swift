@@ -180,6 +180,36 @@ enum BrowseRepository {
         }
     }
 
+    /// Every volume of every topic, in reading order, with its message count.
+    /// 1,405 rows for 463 topics -- read once, to number messages continuously
+    /// across the volumes a topic was split into.
+    static func volumeCounts() throws -> [(topicID: Int64, topic: String, count: Int)] {
+        guard let pool else { return [] }
+        return try pool.read { db in
+            try Row.fetchAll(db, sql: """
+                -- char(31), a unit separator: a NUL would truncate the
+                -- string inside SQLite, and any printable joiner could occur
+                -- in a topic name.
+                SELECT t.id AS id, c.family || char(31) || t.name AS topic,
+                       t.msg_count AS n
+                FROM topic t JOIN conference c ON c.id = t.conf_id
+                WHERE t.msg_count > 0
+                ORDER BY c.family, t.name, c.ord, c.volume
+                """).map { (topicID: $0["id"], topic: $0["topic"], count: $0["n"] ?? 0) }
+        }
+    }
+
+    /// The `seq` numbers present in one volume, in order. Deletions left gaps --
+    /// 1,213 of the 1,405 volumes have them -- so a message's place within its
+    /// volume has to be counted, not calculated from its seq.
+    static func seqs(topicID: Int64) throws -> [Int] {
+        guard let pool else { return [] }
+        return try pool.read { db in
+            try Int.fetchAll(db, sql: "SELECT seq FROM message WHERE topic_id = ? ORDER BY seq",
+                             arguments: [topicID])
+        }
+    }
+
     /// Who replied to each of these messages -- the reverse of `reply_seq`, for
     /// the "replied to by" hints.
     ///

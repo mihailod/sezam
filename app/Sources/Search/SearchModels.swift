@@ -13,7 +13,8 @@ struct MessageHit: Identifiable, Hashable {
     /// How many messages answered this one.
     let replies: Int
 
-    var location: String { "\(family) · \(topic) · #\(seq)" }
+    /// Conference and topic; the number comes from `MessageNumbering`.
+    var source: String { "\(family) · \(topic)" }
 
     /// "(5 replies)", "(1 reply)", "(no replies)". Shown on every hit, not just
     /// under Most Replies, so the count is visible before anyone goes looking

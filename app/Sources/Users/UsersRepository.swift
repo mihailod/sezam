@@ -184,7 +184,9 @@ struct AuthorMessage: Identifiable, Hashable {
     /// How many messages answered this one.
     let replies: Int
 
-    var location: String { "\(family) · \(topic) · #\(seq)" }
+    /// Conference and topic. The message's number is not spelled here: it is
+    /// its place in the whole topic, which only `MessageNumbering` knows.
+    var source: String { "\(family) · \(topic)" }
 
     var displayDate: String { ArchiveDate.day(timestamp) ?? "" }
 

@@ -514,6 +514,19 @@ private struct MessageCell: View {
     /// Three covers 97% of replied-to messages; the rest open on the +N. One
     /// message in this archive was answered 63 times, and listing those inline
     /// would bury the message they are answering.
+    private let numbering = MessageNumbering.shared
+
+    /// "↩ #1,399 pera" -- the message this one answers, by its place in the
+    /// topic rather than the number the board gave it.
+    private var replyHint: String? {
+        guard let seq = message.replySeq else { return nil }
+        let number = numbering.number(topicID: message.topicID, seq: seq)
+        // U+FE0E keeps "↩" a hairline mark: bare, iOS draws it as the blue
+        // emoji arrow-in-a-box, which sat oddly beside the "↳" below it.
+        guard let who = message.replyAuthor, !who.isEmpty else { return "↩\u{FE0E} \(number)" }
+        return "↩\u{FE0E} \(number) \(who)"
+    }
+
     private static let inlineLimit = 3
     @State private var showAllReplies = false
 
@@ -529,11 +542,12 @@ private struct MessageCell: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.tint)
-                Text("#\(message.seq)").font(.caption2).foregroundStyle(.tertiary)
+                Text(numbering.label(topicID: message.topicID, seq: message.seq))
+                    .font(.caption2).foregroundStyle(.tertiary)
                 Spacer()
                 Text(message.displayDate).font(.caption2).foregroundStyle(.secondary)
             }
-            if let reply = message.replyLabel {
+            if let reply = replyHint {
                 if canJump {
                     Button(action: onJump) {
                         Text(reply).font(.caption2)
@@ -573,7 +587,8 @@ private struct MessageCell: View {
             Text("↳").font(.caption2).foregroundStyle(.secondary)
             ForEach(shown) { ref in
                 Button { onReply(ref) } label: {
-                    Text("#\(ref.seq) \(ref.author)").font(.caption2)
+                    Text("\(numbering.number(topicID: message.topicID, seq: ref.seq)) \(ref.author)")
+                    .font(.caption2)
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.tint)

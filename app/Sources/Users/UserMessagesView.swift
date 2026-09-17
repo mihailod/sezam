@@ -90,6 +90,7 @@ final class AuthorMessagePager {
 struct UserMessagesView: View {
     let user: UserItem
     @State private var pager: AuthorMessagePager
+    private let numbering = MessageNumbering.shared
 
     init(user: UserItem) {
         self.user = user
@@ -135,7 +136,9 @@ struct UserMessagesView: View {
                         anchor: MessageAnchor(topicID: msg.topicID, seq: msg.seq))) {
                         VStack(alignment: .leading, spacing: 3) {
                             HStack {
-                                Text(msg.location).font(.caption2).foregroundStyle(.tint)
+                                Text("\(msg.source) · "
+                                     + numbering.label(topicID: msg.topicID, seq: msg.seq))
+                                    .font(.caption2).foregroundStyle(.tint)
                                     .lineLimit(1)
                                 Text(ReplyCount.label(msg.replies))
                                     .font(.caption2).foregroundStyle(.secondary)

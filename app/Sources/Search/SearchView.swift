@@ -94,6 +94,7 @@ final class SearchController {
 struct SearchView: View {
     @State private var controller = SearchController()
     @State private var router = NavRouter()
+    private let numbering = MessageNumbering.shared
 
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -187,7 +188,8 @@ struct SearchView: View {
                             // in the same tint as on a member's message list, so a hit
                             // reads source-first the way those rows do. It used to
                             // trail the snippet in faint grey, easy to miss.
-                            Text(hit.location)
+                            Text("\(hit.source) · "
+                                 + numbering.label(topicID: hit.topicID, seq: hit.seq))
                                 .font(.caption2).foregroundStyle(.tint)
                                 .lineLimit(1)
                             Text(SearchSnippet.make(from: hit.body, terms: controller.terms))
