@@ -115,7 +115,8 @@ enum UsersRepository {
         let head = """
             SELECT m.id AS id, m.seq AS seq, m.ts AS ts, m.epoch AS epoch,
                    m.body AS body, m.topic_id AS topic_id, t.name AS topic,
-                   c.family AS family, c.volume AS volume
+                   c.family AS family, c.volume AS volume,
+                   \(ReplyCount.sqlColumn)
             FROM message m
             JOIN topic t      ON t.id = m.topic_id
             JOIN conference c ON c.id = t.conf_id
@@ -130,7 +131,35 @@ enum UsersRepository {
                 AuthorMessage(id: $0["id"], seq: $0["seq"] ?? 0, timestamp: $0["ts"],
                               epoch: $0["epoch"] ?? 0,
                               body: $0["body"] ?? "", topicID: $0["topic_id"] ?? 0,
-                              topic: $0["topic"], family: $0["family"], volume: $0["volume"])
+                              topic: $0["topic"], family: $0["family"], volume: $0["volume"],
+                              replies: $0["replies"] ?? 0)
+            }
+        }
+    }
+
+    /// One author's messages, most-answered first. Ties go to the older
+    /// message, as in a thread's Most Replies, with the id making the order
+    /// total so OFFSET pages never repeat or skip a row.
+    static func mostRepliedMessages(authorID: Int64, limit: Int, offset: Int) throws -> [AuthorMessage] {
+        guard let pool else { return [] }
+        return try pool.read { db in
+            try Row.fetchAll(db, sql: """
+                SELECT m.id AS id, m.seq AS seq, m.ts AS ts, m.epoch AS epoch,
+                       m.body AS body, m.topic_id AS topic_id, t.name AS topic,
+                       c.family AS family, c.volume AS volume,
+                       \(ReplyCount.sqlColumn)
+                FROM message m
+                JOIN topic t      ON t.id = m.topic_id
+                JOIN conference c ON c.id = t.conf_id
+                WHERE m.author_id = ?
+                ORDER BY replies DESC, m.epoch, m.id
+                LIMIT ? OFFSET ?
+                """, arguments: [authorID, limit, offset]).map {
+                AuthorMessage(id: $0["id"], seq: $0["seq"] ?? 0, timestamp: $0["ts"],
+                              epoch: $0["epoch"] ?? 0,
+                              body: $0["body"] ?? "", topicID: $0["topic_id"] ?? 0,
+                              topic: $0["topic"], family: $0["family"], volume: $0["volume"],
+                              replies: $0["replies"] ?? 0)
             }
         }
     }
@@ -152,6 +181,8 @@ struct AuthorMessage: Identifiable, Hashable {
     let topic: String
     let family: String
     let volume: String
+    /// How many messages answered this one.
+    let replies: Int
 
     var location: String { "\(family) · \(topic) · #\(seq)" }
 

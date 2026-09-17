@@ -18,13 +18,7 @@ struct MessageHit: Identifiable, Hashable {
     /// "(5 replies)", "(1 reply)", "(no replies)". Shown on every hit, not just
     /// under Most Replies, so the count is visible before anyone goes looking
     /// for a way to sort by it.
-    var repliesLabel: String {
-        switch replies {
-        case 0:  return "(no replies)"
-        case 1:  return "(1 reply)"
-        default: return "(\(replies) replies)"
-        }
-    }
+    var repliesLabel: String { ReplyCount.label(replies) }
 
     var displayDate: String { ArchiveDate.day(timestamp) ?? "" }
 }
