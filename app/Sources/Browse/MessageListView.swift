@@ -82,6 +82,15 @@ final class MessagePager {
         }
     }
 
+    /// The final volume's highest seq: the last message ever posted to this
+    /// topic. Read from the volume's seq list, which the numbering already
+    /// loads, rather than with a query of its own.
+    func endAnchor() -> MessageAnchor? {
+        guard let volume = volumes.last,
+              let seq = (try? BrowseRepository.seqs(topicID: volume.id))?.last else { return nil }
+        return MessageAnchor(topicID: volume.id, seq: seq)
+    }
+
     /// Pages forward until a reply is in memory, and answers with its row.
     ///
     /// The mirror of `reveal(parentOf:)`: replies sit later in the same volume,
@@ -366,7 +375,19 @@ struct MessageListView: View {
                             router.path.append(ConferenceLink(family: topic.family))
                         }
                         Text("·").foregroundStyle(.secondary)
-                        Button(topic.name) { openFromStart(using: proxy) }
+                        // A menu rather than a plain jump to the start: both
+                        // ends of a decade-long topic are worth reaching, and
+                        // the topic name is where a reader already looks.
+                        Menu {
+                            Button("Go to First Message", systemImage: "arrow.up.to.line") {
+                                openFromStart(using: proxy)
+                            }
+                            Button("Go to Last Message", systemImage: "arrow.down.to.line") {
+                                openAtEnd(using: proxy)
+                            }
+                        } label: {
+                            Text(topic.name)
+                        }
                     }
                     .font(.headline)
                     .buttonStyle(.plain)
@@ -411,6 +432,30 @@ struct MessageListView: View {
             withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(first.id, anchor: .top) }
         } else {
             router.path.append(ThreadTarget(topic: topic, anchor: nil))
+        }
+    }
+
+    /// The end of the topic.
+    ///
+    /// Reached the same way arriving from a search hit is: a window loaded
+    /// around the last message, with "Load earlier messages" above it. Paging
+    /// the whole way there would be 400-odd queries on the largest topic, and
+    /// nobody asked to read all of it.
+    private func openAtEnd(using proxy: ScrollViewProxy) {
+        switch pager.sort {
+        case .oldest where pager.reachedEnd:
+            // Everything is already loaded: the last row is right there.
+            if let last = pager.items.last {
+                withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(last.id, anchor: .bottom) }
+            }
+        case .newest:
+            // Newest first, so the last message is the top row.
+            if let first = pager.items.first {
+                withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(first.id, anchor: .top) }
+            }
+        default:
+            guard let anchor = pager.endAnchor() else { return }
+            openInContext(anchor)
         }
     }
 
