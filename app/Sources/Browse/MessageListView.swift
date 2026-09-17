@@ -285,8 +285,14 @@ struct MessageListView: View {
     }
 
     @State private var highlighted: Int64?
+    @State private var reading = ReadingPosition()
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
+        // Before layout, so a size change freezes the place while it still
+        // describes the rows as they were.
+        let _ = reading.observe(typeSize: typeSize)
         ScrollViewReader { proxy in
             List {
                 if pager.canLoadEarlier {
@@ -303,6 +309,11 @@ struct MessageListView: View {
                                 onReply: { jump(toReply: $0, of: msg, using: proxy) },
                                 onAuthor: { router.path.append(AuthorLink(username: $0)) })
                         .id(msg.id)
+                        .onGeometryChange(for: CGRect.self) {
+                            $0.frame(in: .named(ReadingPosition.space))
+                        } action: { reading.rowMoved(msg.id, to: $0) }
+                        .onDisappear { reading.rowGone(msg.id) }
+                        .background(EnclosingScrollView { reading.scrollView = $0 })
                         .listRowBackground(highlighted == msg.id
                                            ? Color.accentColor.opacity(0.15) : Color.clear)
                         .onAppear {
@@ -319,6 +330,23 @@ struct MessageListView: View {
             // top rather than holding the offset of rows that have all moved.
             .id(pager.sort)
             .listStyle(.plain)
+            .coordinateSpace(.named(ReadingPosition.space))
+            .onGeometryChange(for: CGRect.self) { geo in
+                // Size excludes the bars; their inset is where reading starts.
+                CGRect(x: 0, y: geo.safeAreaInsets.top, width: 0, height: geo.size.height)
+            } action: { reading.viewportChanged(top: $0.minY, height: $0.height) }
+            // Everything that re-lays-out the rows without the reader
+            // scrolling: freeze the place first, put it back after.
+            .onDisappear { reading.freeze() }
+            .onAppear { Task { await reading.restore(using: proxy) } }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    Task { await reading.restore(using: proxy) }
+                } else {
+                    reading.freeze()
+                }
+            }
+            .onChange(of: typeSize) { _, _ in Task { await reading.restore(using: proxy) } }
             // The full path, not the bare topic name: a thread is reached from
             // a search hit and from a user's history as often as by drilling
             // down, and in those two the conference is nowhere else on screen.
@@ -350,7 +378,7 @@ struct MessageListView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     SortMenu(selection: Binding(get: { pager.sort },
-                                                set: { pager.setSort($0) }),
+                                                set: { reading.forget(); pager.setSort($0) }),
                              compact: true)
                 }
             }
