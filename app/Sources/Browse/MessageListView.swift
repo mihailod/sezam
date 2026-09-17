@@ -393,10 +393,14 @@ struct MessageListView: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(.tint)
                     .lineLimit(1)
-                    // "PCUSER · tekst.procesori" is the widest pair in the
-                    // archive and does not fit a principal item at .headline
-                    // on a narrow phone.
-                    .minimumScaleFactor(0.7)
+                    // A phone cannot fit the widest pair in the archive,
+                    // "PCUSER · tekst.procesori", at .headline, so there the
+                    // title shrinks to fit. An iPad has room to spare, yet the
+                    // toolbar proposes a narrow width all the same and the
+                    // conference half came out as "MALI...": there, take the
+                    // natural width instead of accepting the proposal.
+                    .minimumScaleFactor(Device.isPad ? 1 : 0.7)
+                    .fixedSize(horizontal: Device.isPad, vertical: false)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     SortMenu(selection: Binding(get: { pager.sort },
