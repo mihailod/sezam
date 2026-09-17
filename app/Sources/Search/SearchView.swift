@@ -183,10 +183,16 @@ struct SearchView: View {
                                 Spacer()
                                 Text(hit.displayDate).font(.caption2).foregroundStyle(.secondary)
                             }
+                            // Where the message lives, straight under who wrote it and
+                            // in the same tint as on a member's message list, so a hit
+                            // reads source-first the way those rows do. It used to
+                            // trail the snippet in faint grey, easy to miss.
+                            Text(hit.location)
+                                .font(.caption2).foregroundStyle(.tint)
+                                .lineLimit(1)
                             Text(SearchSnippet.make(from: hit.body, terms: controller.terms))
                                 .font(.footnote)
                                 .lineLimit(3)
-                            Text(hit.location).font(.caption2).foregroundStyle(.tertiary)
                         }
                         .padding(.vertical, 2)
                     }
