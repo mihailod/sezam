@@ -1,8 +1,6 @@
-<H1>C O M I N G &nbsp; S O O N</H1>
-
 <table><tr>
 <th>
-  <a href="https://apps.apple.com/us/app/xxx/xxx">
+  <a href="https://apps.apple.com/us/app/sezam-bbs/id6811744525">
   <img src=https://raw.githubusercontent.com/mihailod/sezam/refs/heads/master/app/Resources/Assets.xcassets/AppIconPreview.imageset/AppIconPreview.png width=200>
   </a>
 </th>
@@ -17,9 +15,9 @@
   Preko pola miliona nostalgičnih poruka<br>
   iz prošlih (srećnijih?) vremena<br>
   koje su pisali legendarni korisnici.<br><br>
-  September ??th, 2026<br>
+  September 16th, 2026<br>
   Now on App Store!<br><br>
-  <a href="https://apps.apple.com/us/app/xxx/xxx" float="left">
+  <a href="https://apps.apple.com/us/app/sezam-bbs/id6811744525" float="left">    
     <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1276560000&h=7e7b68fad19738b5649a1bfb78ff46e9" alt="Download on the App Store"><br></a><br>
 </th>
 </tr>
@@ -43,7 +41,7 @@
 
 ## 1.0 Features (Debuted on App Store on September, xxth 2026)
 
-  <a href="https://apps.apple.com/us/app/xxx/xxx" float="left">
+  <a href="https://apps.apple.com/us/app/sezam-bbs/id6811744525" float="left">
     <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1276560000&h=7e7b68fad19738b5649a1bfb78ff46e9" alt="Download on the App Store"><br></a>
 
 - Sezam BBS je bio kultno virtuelno mesto gde se okupljala domaća ("ex-YU") računarska scena, deceniju pre nego što je komunikacija internetom postala svakodnevica.
@@ -68,7 +66,7 @@
   - Poruku sa najviše odgovora (63) je napisao korisnik berg i počinje ovako: "P O M O C !!!!! Windows mi prilikom instalacije (kada treba da se podigne radi daljeg setup-a) izbacuje instalaciju i prijavljuje sledece..."
   - Otkrijte šta se desilo bergu, koji su mu legendarni sezamovci priskočili u pomoć i da li su uspeli… - instalirajte Sezam BBS app!
 
-<a href="https://apps.apple.com/us/app/xxx/xxx" float="left">
+<a href="https://apps.apple.com/us/app/sezam-bbs/id6811744525" float="left">
     <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1276560000&h=7e7b68fad19738b5649a1bfb78ff46e9" alt="Download on the App Store"><br></a><br>
 
 ---
@@ -81,5 +79,5 @@
 * 🟢 **Free to use** for personal, educational, research, and non-commercial projects.
 * 🔴 **Commercial use prohibited.** If you intend to use my code in any way in any revenue-generating product, you must contact me for a commercial license.
 
-<a href="https://apps.apple.com/us/app/xxx/xxx" float="left">
+<a href="https://apps.apple.com/us/app/sezam-bbs/id6811744525" float="left">
     <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1276560000&h=7e7b68fad19738b5649a1bfb78ff46e9" alt="Download on the App Store"><br></a><br>
