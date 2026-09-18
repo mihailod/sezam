@@ -411,10 +411,8 @@ struct MessageListView: View {
             .task {
                 pager.start()
                 if let target = pager.consumePendingScroll() {
-                    // One runloop turn so the rows exist before scrolling to one.
-                    try? await Task.sleep(for: .milliseconds(60))
-                    proxy.scrollTo(target, anchor: .top)
                     highlighted = target
+                    await settle(on: target, using: proxy)
                     try? await Task.sleep(for: .seconds(1.4))
                     withAnimation(.easeOut(duration: 0.5)) { highlighted = nil }
                 }
@@ -496,14 +494,39 @@ struct MessageListView: View {
     }
 
     private func land(on target: Int64, using proxy: ScrollViewProxy) {
-        withAnimation(.easeInOut(duration: 0.25)) {
-            proxy.scrollTo(target, anchor: .top)
-            highlighted = target
-        }
-        // Fade the highlight so the eye lands on the right message, then settles.
+        highlighted = target
         Task {
+            await settle(on: target, using: proxy)
+            // Fade the highlight so the eye lands on the right message, then settles.
             try? await Task.sleep(for: .seconds(1.4))
             withAnimation(.easeOut(duration: 0.5)) { highlighted = nil }
+        }
+    }
+
+    /// Scrolls to a message and checks it arrived, scrolling again while it has
+    /// not.
+    ///
+    /// A single scroll after a fixed wait is a guess about how long the list
+    /// takes to lay out, and the wait was wrong on a real phone at larger text
+    /// sizes -- taller rows, slower device -- while looking right on a Mac.
+    /// The row frames say where the message actually is, so this asks rather
+    /// than assumes, and stops as soon as the answer is "at the top".
+    private func settle(on target: Int64, using proxy: ScrollViewProxy) async {
+        var previous: CGFloat?
+        for attempt in 0..<12 {
+            var transaction = Transaction()
+            // The first scroll may animate; the corrections must not, or the
+            // reader would watch the list twitch into place.
+            transaction.disablesAnimations = attempt > 0
+            withTransaction(transaction) { proxy.scrollTo(target, anchor: .top) }
+            try? await Task.sleep(for: .milliseconds(60))
+            guard let now = reading.top(of: target) else { continue }
+            // Arrived.
+            if abs(now - reading.readingEdge) < 2 { return }
+            // Or as close as it can get: the last messages of a thread cannot
+            // reach the top edge, and repeating would not move them.
+            if let previous, abs(now - previous) < 1 { return }
+            previous = now
         }
     }
 }

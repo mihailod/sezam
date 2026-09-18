@@ -64,6 +64,11 @@ final class ReadingPosition {
 
     func rowGone(_ id: Int64) { frames[id] = nil }
 
+    /// Where reading starts, and where a row's top sits: enough to tell whether
+    /// a scroll has actually arrived, rather than trusting that it will have.
+    var readingEdge: CGFloat { edge }
+    func top(of id: Int64) -> CGFloat? { frames[id]?.minY }
+
     func viewportChanged(top: CGFloat, height: CGFloat) {
         edge = top
         visibleHeight = height
