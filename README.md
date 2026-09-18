@@ -32,21 +32,21 @@
 
 **Sezam BBS on iPad**
 
-<img src="screenshots/iPad/IMG_0819.PNG" width=400><img src="screenshots/iPad/IMG_0820.PNG" width=400>
-<img src="screenshots/iPad/IMG_0821.PNG" width=400><img src="screenshots/iPad/IMG_0822.PNG" width=400>
-<img src="screenshots/iPad/IMG_0823.PNG" width=400><img src="screenshots/iPad/IMG_0824.PNG" width=400>
-<img src="screenshots/iPad/IMG_0825.PNG" width=400>
+<img src="screenshots/iPad/IMG_0819.PNG" width=300><img src="screenshots/iPad/IMG_0820.PNG" width=300>
+<img src="screenshots/iPad/IMG_0821.PNG" width=300><img src="screenshots/iPad/IMG_0822.PNG" width=300>
+<img src="screenshots/iPad/IMG_0823.PNG" width=300><img src="screenshots/iPad/IMG_0824.PNG" width=300>
+<img src="screenshots/iPad/IMG_0825.PNG" width=300>
 
 ---
 
-## 1.0 Features (Debuted on App Store on September, xxth 2026)
+**Kompletan Sezam BBS na vasem iPhone-u ili iPad-u!**
 
-  <a href="https://apps.apple.com/us/app/sezam-bbs/id6811744525" float="left">
+<a href="https://apps.apple.com/us/app/sezam-bbs/id6811744525" float="left">
     <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1276560000&h=7e7b68fad19738b5649a1bfb78ff46e9" alt="Download on the App Store"><br></a>
 
-- Sezam BBS je bio kultno virtuelno mesto gde se okupljala domaća ("ex-YU") računarska scena, deceniju pre nego što je komunikacija internetom postala svakodnevica.
+- Sezam BBS je bio kultno virtuelno mesto gde se okupljala domaća ("ex-YU") računarska scena, deceniju pre nego što je komunikacija internetom postala svakodnevica
 
-- Ova aplikacija sadrži kompletnu Sezam BBS arhivu, od 1989. do 1999. godine, preuzetu sa public domain oldsezam.net sajta.
+- Aplikacija sadrži kompletnu Sezam BBS arhivu, od 1989. do 1999. godine, preuzetu sa public domain oldsezam.net sajta
 
 - 572.645 poruka iz svih 27 konferencija (463 teme)
 - Imenik od 8.105 korisnika: pretraga kao i sortiranje po datumu učlanjenja, broju poruka, zadnjem javljanju, imenu, gradu, firmi
@@ -73,7 +73,7 @@
 
 ## Sezam BBS License
 
-**Content:** The app is a browser / reader of bundled public domain content from (oldsezam.net)[oldesezam.net]
+**Content:** The app bundles public domain content from [oldsezam.net](https://oldsezam.net).
 
 **Code:** Copyright © Mihailo Despotovic, 2026. Licensed under [PolyForm Noncommercial 1.0.0](LICENSE).
 * 🟢 **Free to use** for personal, educational, research, and non-commercial projects.
