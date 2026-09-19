@@ -290,7 +290,7 @@ struct UsersView: View {
                     hay.reserveCapacity(people.count + absent.count)
                     keys.reserveCapacity(people.count + absent.count)
                     for u in people + absent {
-                        hay[u.id] = SerbianLatin.fold(
+                        hay[u.id] = SerbianLatin.searchText(
                             [u.username, u.fullName ?? "", u.city ?? "", u.company ?? ""]
                                 .joined(separator: " "))
                         keys[u.id] = SerbianLatin.key(u.username)

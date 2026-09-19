@@ -72,7 +72,7 @@ enum SerbianLatin {
                 // A letter outside the abeceda (é, ü, ß...). Fold it to ASCII
                 // and weigh whatever that produces, so it still sorts near the
                 // letter a reader would look under.
-                for f in SearchQuery.fold(String(ch)).lowercased() {
+                for f in fold(String(ch)) {
                     if let w = weight[f] {
                         if pendingSpace, !out.isEmpty { out += classSpace + "00" }
                         pendingSpace = false
@@ -123,9 +123,12 @@ enum SerbianLatin {
         }
         // Stroked and slashed letters have no canonical decomposition -- the
         // stroke is part of the letter, not an accent on it -- so Unicode
-        // cannot answer for these four and they are named outright.
+        // cannot answer for these and they are named outright.
         m["đ"] = "d"; m["Đ"] = "d"
         m["ø"] = "o"; m["Ø"] = "o"
+        // CP852 quote-prefix mojibake. The message index drops it at build
+        // time, so text folded here has to drop it too, or the two disagree.
+        m["ł"] = ""; m["Ł"] = ""
         return m
     }()
 
@@ -141,24 +144,56 @@ enum SerbianLatin {
     static func fold(_ s: String) -> String {
         var out = ""
         out.reserveCapacity(s.utf8.count)
-        for u in s.unicodeScalars {
-            switch u.value {
-            case 0x41...0x5A:                       // A-Z
-                out.unicodeScalars.append(UnicodeScalar(u.value + 32)!)
-            case 0x00...0x7F:                       // the rest of ASCII, as-is
-                out.unicodeScalars.append(u)
-            case 0x300...0x36F:                     // a combining mark: drop it
-                break
-            default:
-                out += asciiByScalar[u] ?? String(u).lowercased()
-            }
-        }
+        for u in s.unicodeScalars { out += fold(scalar: u) }
         return out
+    }
+
+    /// One scalar folded. Exposed because the search snippet has to map a match
+    /// in folded text back to the original, which needs the pieces separately.
+    static func fold(scalar u: UnicodeScalar) -> String {
+        switch u.value {
+        case 0x41...0x5A:                       // A-Z
+            return String(UnicodeScalar(u.value + 32)!)
+        case 0x00...0x7F:                       // the rest of ASCII, as-is
+            return String(u)
+        case 0x300...0x36F:                     // a combining mark: drop it
+            return ""
+        default:
+            // Anything the table does not cover -- Cyrillic, Latin Extended-B,
+            // the rarer accents -- folded by ICU, the same call the message
+            // index's queries used before both sides shared this function.
+            return asciiByScalar[u] ?? String(u).folding(
+                options: [.diacriticInsensitive, .caseInsensitive],
+                locale: Locale(identifier: "en_US"))
+        }
+    }
+
+    /// What to index a person under, so either spelling of đ finds them.
+    ///
+    /// Folding alone files "Srđan Pantić" as "srdan pantic", and someone
+    /// typing the far more common "srdjan" finds nobody. đ is written three
+    /// ways -- đ, dj, d -- and the Search tab already answers all three by
+    /// expanding the query; a substring match cannot expand a query the same
+    /// way, so the *text* carries both spellings instead.
+    ///
+    /// Both directions: 493 members have a real đ in their name, and others
+    /// typed "dj" themselves, who would otherwise be missed by "srdan".
+    static func searchText(_ s: String) -> String {
+        let plain = fold(s)
+        var variants = [plain]
+        if s.contains("đ") || s.contains("Đ") {
+            variants.append(fold(s.replacingOccurrences(of: "đ", with: "dj")
+                                  .replacingOccurrences(of: "Đ", with: "Dj")))
+        }
+        if plain.contains("dj") {
+            variants.append(plain.replacingOccurrences(of: "dj", with: "d"))
+        }
+        return variants.joined(separator: " ")
     }
 
     private static func normalized(_ ch: Character) -> Character? {
         if weight[ch] != nil { return ch }
         guard ch.isLetter else { return nil }
-        return SerbianLatin.alphabet.first { SearchQuery.fold(String(ch)).lowercased().first == $0 }
+        return SerbianLatin.alphabet.first { fold(String(ch)).first == $0 }
     }
 }

@@ -9,19 +9,15 @@ import Foundation
 /// token that cannot exist in the index and silently return nothing.
 enum SearchQuery {
 
+    /// One fold for the whole app, in `SerbianLatin`. There used to be two --
+    /// this one and the Users tab's -- and they drifted: the Users search
+    /// indexed "Ł" that this one drops, and knew nothing of đ's spellings, so
+    /// "srdjan pantic" found nobody while the Search tab found him.
     private static func foldScalar(_ ch: Character) -> String {
-        switch ch {
-        case "đ", "Đ": return "d"      // stroke letter: no Unicode decomposition
-        case "ł", "Ł": return ""       // CP852 quote-prefix mojibake, dropped at index time
-        default:
-            return String(ch).folding(options: [.diacriticInsensitive, .caseInsensitive],
-                                      locale: Locale(identifier: "en_US"))
-        }
+        String(ch).unicodeScalars.reduce(into: "") { $0 += SerbianLatin.fold(scalar: $1) }
     }
 
-    static func fold(_ s: String) -> String {
-        s.reduce(into: "") { $0 += foldScalar($1) }
-    }
+    static func fold(_ s: String) -> String { SerbianLatin.fold(s) }
 
     /// Folded text plus, for every folded character, the index it came from in
     /// the original string. Needed because folding is not length-preserving
