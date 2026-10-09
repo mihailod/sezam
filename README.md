@@ -71,6 +71,34 @@
 
 ---
 
+## Building from source
+
+The archive is not in this repository: `sezam.db.gz` is 318 MB and the expanded
+`sezam.db` 738 MB, both far past GitHub's file limit. They live on
+[archive.org](https://archive.org/details/sezam.db) instead. Fetch them and
+build the bundled resource before the first app build -- the same commands
+restore it if you have deleted it to reclaim disk space:
+
+```sh
+curl -L -o build/sezam.db.gz https://archive.org/download/sezam.db/sezam.db.gz
+gunzip -c build/sezam.db.gz > build/sezam.db
+python3 scripts/bundle_archive.py
+cd app && xcodegen generate
+```
+
+`scripts/bundle_archive.py` writes `app/Resources/sezam.db.gz`, which the app
+ships verbatim and expands on first launch, plus the manifest describing it. It
+works from the *uncompressed* database, which it opens to count rows, hence the
+`gunzip` step, and it re-compresses at level 9, which takes about a minute. It
+deliberately leaves `build/sezam-manifest.json` untouched: that one describes
+the copy archive.org serves and must keep matching it, or apps re-downloading
+the archive would reject a file that is perfectly good.
+
+The `.xcodeproj` is generated from `app/project.yml` by
+[xcodegen](https://github.com/yonaskolb/XcodeGen) and is not committed.
+
+---
+
 ## Sezam BBS License
 
 **Content:** The app bundles public domain content from [oldsezam.net](https://oldsezam.net).
