@@ -73,11 +73,30 @@
 
 ## Building from source
 
-The archive is not in this repository: `sezam.db.gz` is 318 MB and the expanded
-`sezam.db` 738 MB, both far past GitHub's file limit. They live on
-[archive.org](https://archive.org/details/sezam.db) instead. Fetch them and
-build the bundled resource before the first app build -- the same commands
-restore it if you have deleted it to reclaim disk space:
+Needs Xcode (built with 26.6, targets iOS 17), Python 3, and
+[xcodegen](https://github.com/yonaskolb/XcodeGen) -- the `.xcodeproj` is
+generated from `app/project.yml`, not committed.
+
+```sh
+git clone https://github.com/mihailod/sezam.git
+cd sezam
+brew install xcodegen
+cd app && xcodegen generate
+open SezamYU.xcodeproj
+```
+
+That is enough to build and run. The clone carries no archive, so the app comes
+up on its download screen and fetches the 333 MB archive from archive.org on
+first launch.
+
+### Bundling the archive
+
+The App Store build ships the archive inside the app instead, so the first
+launch needs no network. The archive is not in this repository -- `sezam.db.gz`
+is 318 MB and the expanded `sezam.db` 738 MB, both far past GitHub's file limit
+-- so fetch it from [archive.org](https://archive.org/details/sezam.db) and
+build the bundled resource. The same commands restore it if you have deleted it
+to reclaim disk space:
 
 ```sh
 curl -L -o build/sezam.db.gz https://archive.org/download/sezam.db/sezam.db.gz
@@ -94,8 +113,30 @@ deliberately leaves `build/sezam-manifest.json` untouched: that one describes
 the copy archive.org serves and must keep matching it, or apps re-downloading
 the archive would reject a file that is perfectly good.
 
-The `.xcodeproj` is generated from `app/project.yml` by
-[xcodegen](https://github.com/yonaskolb/XcodeGen) and is not committed.
+### Installing on a device
+
+`scripts/iPhone.sh` and `scripts/iPad.sh` build Release, install and launch on
+a paired device -- the same thing as hitting Run in Xcode. Both need two files
+that are deliberately not committed, since they name your signing team and a
+specific piece of hardware. Record the device once with `setup`, which reads it
+out of `xcrun devicectl list devices`, and write the team by hand:
+
+```sh
+echo ABCDE12345 > .team            # Apple Developer Team ID
+./scripts/iPhone.sh setup          # writes .device-iphone
+./scripts/iPhone.sh                # build, install, launch
+```
+
+`./scripts/iPhone.sh no-launch` installs without launching, and `SZ_IPHONE` /
+`SZ_TEAM` override either value for one run. Packaging, distribution signing
+and uploading stay manual.
+
+`scripts/sim_gc.sh` reclaims the space dead simulator containers hold on to;
+the deploy scripts call it themselves.
+
+GRDB is the only dependency, resolved by SwiftPM from the `majorVersion: 7.0.0`
+rule in `app/project.yml`. `Package.resolved` is not committed, so a fresh
+clone takes the newest 7.x -- 7.11.1 at the time of writing.
 
 ---
 
